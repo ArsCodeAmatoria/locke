@@ -8,14 +8,19 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { AdvancedZkProver } from '@/lib/advanced-zkp';
 import { SubstrateClient } from '@/lib/substrate-client';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { Spinner } from '@/components/ui/spinner';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+
+interface VerificationResult {
+  verified: boolean;
+  message: string;
+}
 
 export function CredentialVerify() {
   const [proofInput, setProofInput] = useState('');
   const [verifying, setVerifying] = useState(false);
-  const [result, setResult] = useState<{ verified: boolean; message: string } | null>(null);
+  const [result, setResult] = useState<VerificationResult | null>(null);
   const { toast } = useToast();
 
   const handleVerify = async () => {
@@ -50,18 +55,13 @@ export function CredentialVerify() {
       // Verify the proof
       const isVerified = await zkProver.verifyProof(proofData.proof, proofData.publicInputs);
       
-      if (isVerified) {
-        setResult({
-          verified: true,
-          message: 'Credential verified successfully! The proof is valid.',
-        });
-      } else {
-        setResult({
-          verified: false,
-          message: 'Verification failed. The provided proof is invalid.',
-        });
-      }
-    } catch (error: any) {
+      setResult({
+        verified: isVerified,
+        message: isVerified 
+          ? 'Credential verified successfully! The proof is valid.' 
+          : 'Verification failed. The provided proof is invalid.',
+      });
+    } catch (error) {
       console.error('Verification error:', error);
       toast({
         title: 'Verification Error',
@@ -96,7 +96,7 @@ export function CredentialVerify() {
           disabled={verifying || !proofInput.trim()}
           className="w-full"
         >
-          {verifying ? <LoadingSpinner size={20} className="mr-2" /> : null}
+          {verifying ? <Spinner size="sm" className="mr-2" /> : null}
           {verifying ? 'Verifying...' : 'Verify Credential'}
         </Button>
 
