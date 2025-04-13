@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, X, BookOpen, Terminal, Home, Lock } from 'lucide-react';
+import { Menu, X, BookOpen, Terminal, Home, Lock, Layers } from 'lucide-react';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -43,6 +43,15 @@ export default function Header() {
             >
               <Terminal className="h-4 w-4 mr-1" />
               Login
+            </Link>
+            <Link 
+              href="/multi-chain" 
+              className={`text-sm font-medium transition-colors duration-200 flex items-center ${
+                isActive('/multi-chain') ? 'text-emerald-400' : 'text-slate-300 hover:text-emerald-400'
+              }`}
+            >
+              <Layers className="h-4 w-4 mr-1" />
+              Multi-Chain
             </Link>
             <Link 
               href="/docs" 
@@ -93,6 +102,18 @@ export default function Header() {
             >
               <Terminal className="h-4 w-4 mr-2" />
               Login
+            </Link>
+            <Link 
+              href="/multi-chain" 
+              className={`text-sm font-medium p-2 rounded transition-colors duration-200 flex items-center ${
+                isActive('/multi-chain') 
+                  ? 'bg-emerald-400/10 text-emerald-400' 
+                  : 'text-slate-300 hover:bg-emerald-400/10 hover:text-emerald-400'
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <Layers className="h-4 w-4 mr-2" />
+              Multi-Chain
             </Link>
             <Link 
               href="/docs" 
