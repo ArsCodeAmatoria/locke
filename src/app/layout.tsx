@@ -7,7 +7,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
-import { Metadata } from "next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,13 +19,6 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
   variable: "--font-mono",
 });
-
-export const metadata: Metadata = {
-  title: "zkLocke - Decentralized Identity with Zero-Knowledge Proofs",
-  description: "A secure, privacy-preserving identity verification system powered by zero-knowledge cryptography on Substrate and Polkadot.",
-  authors: [{ name: "Ars Code Amatoria", url: "https://www.arscode.org" }],
-  creator: "Ars Code Amatoria",
-};
 
 export default function RootLayout({
   children,
