@@ -9,8 +9,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "NEXT_DISABLE_OPTIMIZATION=1 next build",
-    "export": "next export",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "node:start": "./start-node.sh",
