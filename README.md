@@ -12,15 +12,18 @@ A decentralized identity verification system built on Polkadot and Substrate wit
 - **Advanced Credential Types**: Support for KYC, age, income, education, citizenship, health, and membership credentials
 - **WASM-powered**: ZK proofs generated in the browser with WebAssembly
 - **Credential Verification**: Verify proofs directly through a user-friendly interface
+- **Multi-Chain Support**: Manage identities across Substrate, Ethereum, Solana, Cosmos, and NEAR chains
+- **Cross-Chain Identity Resolution**: Link DIDs across different blockchains
 - **Cyberpunk-inspired UI**: Modern interface with neon aesthetics
 - **Responsive Design**: Optimized for desktop and mobile devices
 
 ## Tech Stack
 
 - **Frontend**: Next.js 14 (App Router), Tailwind CSS, shadcn/ui, Lucide icons, Framer Motion
-- **Web3 Integration**: Polkadot/js API, Extension-dapp, WalletConnect
+- **Web3 Integration**: Polkadot/js API, Extension-dapp, WalletConnect, ethers.js
 - **ZK Proofs**: WASM-compiled Rust using bellman, bls12_381 for cryptographic operations
 - **Blockchain**: Substrate pallets for DID and SBT with custom runtime
+- **Multi-Chain**: Chain-agnostic DID resolver for cross-chain identity resolution
 
 ## Getting Started
 
@@ -29,6 +32,7 @@ A decentralized identity verification system built on Polkadot and Substrate wit
 - Node.js 18+ installed
 - Polkadot.js browser extension installed (for desktop)
 - Nova Wallet, Talisman, or another Polkadot mobile wallet (for mobile users)
+- MetaMask or another Ethereum wallet (for Ethereum chain interactions)
 - For full functionality: Substrate node running with custom pallets (for demo purposes, mock APIs are provided)
 
 ### Installation
@@ -71,6 +75,7 @@ For full functionality, you can run a local Substrate node with our custom palle
     - `src/components/WalletLogin.tsx`: Desktop wallet connection component
     - `src/components/MobileWalletConnect.tsx`: Mobile wallet connection component
     - `src/components/CredentialVerify.tsx`: Credential proof verification component
+    - `src/components/MultiChainIdentity.tsx`: Multi-chain identity management component
   - `src/lib/`: Utility libraries and hooks
     - `src/lib/hooks/use-auth.tsx`: Authentication hook for managing login state
     - `src/lib/substrate-client.ts`: Client for interacting with Substrate node
@@ -79,6 +84,7 @@ For full functionality, you can run a local Substrate node with our custom palle
     - `src/lib/wasm-zkp/`: WASM module for ZK proof generation/verification
     - `src/lib/walletconnect-utils.ts`: Utilities for mobile wallet connections
     - `src/lib/identity-providers.ts`: Integration with real-world identity providers
+    - `src/lib/multi-chain/`: Multi-chain identity management system
 
 - **Blockchain**:
   - `substrate/pallet-did/`: Substrate pallet for Decentralized Identity
@@ -113,6 +119,41 @@ The zkID Login system now supports mobile wallets for authentication:
 - Deep linking support for direct wallet app opening
 - Responsive design that adapts to different screen sizes
 - Session management for persistent connections
+
+## Multi-Chain Identity Support
+
+Our system now supports identities across multiple blockchains with unified management:
+
+### Supported Blockchains
+
+- **Substrate**: Polkadot and Kusama ecosystems
+- **Ethereum**: Ethereum mainnet and Polygon
+- **Solana**: Solana blockchain
+- **Cosmos**: Cosmos Hub
+- **NEAR**: NEAR Protocol
+
+### Cross-Chain DID Format
+
+The system implements a standardized cross-chain DID format:
+`did:multi:<chain-type>:<chain-id>:<address>`
+
+### Key Features
+
+- **Unified Identity Management**: Manage identities across multiple blockchains from a single interface
+- **Cross-Chain DID Resolution**: Resolve DIDs across any supported blockchain
+- **Identity Linking**: Link identities from different chains to create a unified cross-chain identity
+- **Chain-Agnostic Credential Verification**: Verify credentials issued on any supported chain
+- **Chain Registry**: Comprehensive registry of supported blockchains with metadata
+- **Extensible Architecture**: Easily add support for additional blockchains
+
+### Implementation Components
+
+- **Chain Registry**: Metadata for all supported blockchains
+- **DID Resolver**: Resolution of DIDs across multiple chains
+- **Chain Client Interface**: Common interface for interacting with different blockchains
+- **Chain-Specific Implementations**: Native clients for each supported blockchain
+- **Cross-Chain Identity Manager**: Orchestration layer for managing identities across chains
+- **React Hook**: Easy-to-use React hook for frontend integration
 
 ## Advanced Credential Types
 
@@ -247,14 +288,6 @@ The system now integrates with real-world identity providers:
 - **Financial Institutions**: Banks and financial service providers
 - **Healthcare Providers**: Medical credential issuers
 - **Corporate Identity**: Business verification services
-
-### Integration Features
-
-- **Standardized API**: Common interface for all identity providers
-- **Verification Initiation**: Start verification process with selected provider
-- **Status Checking**: Monitor verification progress
-- **Credential Retrieval**: Import verified credentials into the system
-- **Privacy Controls**: User consent management for data sharing
 
 ## Development Roadmap
 
