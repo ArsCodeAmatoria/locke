@@ -1,67 +1,70 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Wallet, Shield, Lock, FileBadge, KeyRound, ChevronRight, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Wallet, Shield, Lock, FileBadge, KeyRound, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
+import { useAuth } from '@/lib/hooks/use-auth';
 
 type LoginStep = 'connect-wallet' | 'create-identity' | 'verify-identity' | 'complete';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { login, createIdentity, isLoading, error } = useAuth();
   const [step, setStep] = useState<LoginStep>('connect-wallet');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
   const [account, setAccount] = useState<{address: string} | null>(null);
-  const [identity, setIdentity] = useState<{did: {id: string}, sbts: any[]} | null>(null);
 
   const handleConnectWallet = async () => {
-    setIsLoading(true);
-    setError(null);
+    setLocalError(null);
     
     try {
-      // Mock login
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Simulate successful connection
-      setAccount({
+      // Create mock account for demo purposes
+      const mockAccount = {
         address: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'
-      });
+      };
       
-      setStep('create-identity');
+      setAccount(mockAccount);
+      
+      // The login function in useAuth hook already accepts an account parameter
+      const success = await login(mockAccount);
+      
+      if (success) {
+        setStep('create-identity');
+      } else {
+        setLocalError('Login failed. Please try again.');
+      }
     } catch (err) {
-      setError('Failed to authenticate. Please try again.');
-    } finally {
-      setIsLoading(false);
+      setLocalError('Failed to authenticate. Please try again.');
     }
   };
 
   const handleCreateIdentity = async () => {
-    setIsLoading(true);
-    setError(null);
+    setLocalError(null);
+    
+    if (!account) {
+      setLocalError('No account connected. Please connect your wallet first.');
+      return;
+    }
     
     try {
-      // Mock identity creation
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // The createIdentity function in useAuth hook already accepts an account parameter
+      const didId = await createIdentity(account);
       
-      setIdentity({
-        did: {
-          id: 'did:substrate:' + account?.address
-        },
-        sbts: []
-      });
-      
-      setStep('verify-identity');
+      if (didId) {
+        setStep('verify-identity');
+      } else {
+        setLocalError('Failed to create identity. Please try again.');
+      }
     } catch (err) {
-      setError('Failed to create identity. Please try again.');
-    } finally {
-      setIsLoading(false);
+      setLocalError('Error creating identity. Please try again.');
     }
   };
 
   const verifyIdentity = async () => {
-    setIsLoading(true);
-    setError(null);
+    setLocalError(null);
     
     try {
       // Mock verification
@@ -69,16 +72,17 @@ export default function LoginPage() {
       
       setStep('complete');
     } catch (err) {
-      setError('Failed to verify identity. Please try again.');
-    } finally {
-      setIsLoading(false);
+      setLocalError('Failed to verify identity. Please try again.');
     }
   };
   
   const reset = () => {
     setStep('connect-wallet');
-    setError(null);
+    setLocalError(null);
   };
+
+  // Display either local error or error from auth context
+  const displayError = localError || (error ? error.toString() : null);
 
   return (
     <div className="min-h-screen bg-background py-16 px-4">
@@ -123,10 +127,10 @@ export default function LoginPage() {
                 )}
               </button>
               
-              {error && (
+              {displayError && (
                 <div className="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-500/20 rounded text-sm text-red-600 dark:text-red-400 flex items-start mt-4">
                   <AlertCircle className="h-4 w-4 mr-2 mt-0.5 shrink-0" />
-                  <span>{error}</span>
+                  <span>{displayError}</span>
                 </div>
               )}
             </motion.div>
@@ -163,10 +167,10 @@ export default function LoginPage() {
                 )}
               </button>
               
-              {error && (
+              {displayError && (
                 <div className="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-500/20 rounded text-sm text-red-600 dark:text-red-400 flex items-start mt-4">
                   <AlertCircle className="h-4 w-4 mr-2 mt-0.5 shrink-0" />
-                  <span>{error}</span>
+                  <span>{displayError}</span>
                 </div>
               )}
               
@@ -211,10 +215,10 @@ export default function LoginPage() {
                 )}
               </button>
               
-              {error && (
+              {displayError && (
                 <div className="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-500/20 rounded text-sm text-red-600 dark:text-red-400 flex items-start mt-4">
                   <AlertCircle className="h-4 w-4 mr-2 mt-0.5 shrink-0" />
-                  <span>{error}</span>
+                  <span>{displayError}</span>
                 </div>
               )}
               
