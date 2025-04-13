@@ -1,5 +1,5 @@
 {
-  "name": "zkid-login",
+  "name": "zklocke",
   "version": "0.1.0",
   "private": true,
   "author": "Ars Code Amatoria (https://www.arscode.org)",
@@ -9,7 +9,8 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "NEXT_DISABLE_OPTIMIZATION=1 next build",
+    "export": "next export",
     "start": "next start",
     "lint": "next lint",
     "node:start": "./start-node.sh",
