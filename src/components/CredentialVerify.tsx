@@ -46,7 +46,6 @@ export function CredentialVerify() {
 
       // Initialize ZK prover
       const zkProver = AdvancedZkProver.getInstance();
-      await zkProver.initialize();
       
       // Connect to Substrate
       const substrateClient = SubstrateClient.getInstance();
