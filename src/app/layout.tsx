@@ -2,6 +2,7 @@
 
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { AnimatePresence } from "framer-motion";
+import { AuthProvider } from "@/lib/hooks/use-auth";
 import Header from "@/components/Header";
 import "./globals.css";
 
@@ -25,12 +26,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="antialiased min-h-screen">
-        <Header />
-        <div className="pt-16"> {/* Adding padding to account for fixed header */}
-          <AnimatePresence mode="wait">
-            {children}
-          </AnimatePresence>
-        </div>
+        <AuthProvider>
+          <Header />
+          <div className="pt-16"> {/* Adding padding to account for fixed header */}
+            <AnimatePresence mode="wait">
+              {children}
+            </AnimatePresence>
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );
