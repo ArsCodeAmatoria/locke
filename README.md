@@ -1,4 +1,4 @@
-# zkID Login
+# zkLocke
 
 A decentralized identity verification system built on Polkadot and Substrate with Zero-Knowledge Proofs for privacy-preserving authentication.
 
@@ -128,7 +128,7 @@ For full functionality, you can run a local Substrate node with our custom palle
 
 ## Rust WebAssembly ZKP Module
 
-The zkID Login now features a high-performance cryptographic module implemented in Rust and compiled to WebAssembly, providing significant performance improvements for computationally intensive operations.
+The zkLocke now features a high-performance cryptographic module implemented in Rust and compiled to WebAssembly, providing significant performance improvements for computationally intensive operations.
 
 ### Features
 
@@ -173,7 +173,7 @@ Visit the WASM ZKP Demo page in the application to see a live performance compar
 
 ## Mobile Wallet Support
 
-The zkID Login system now supports mobile wallets for authentication:
+The zkLocke system now supports mobile wallets for authentication:
 
 ### Supported Mobile Wallets
 
