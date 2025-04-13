@@ -46,9 +46,12 @@ export class AdvancedZkProver {
     
     try {
       this.zkProver = ZkProver.getInstance();
-      await this.zkProver.init();
-      this.isInitialized = true;
-      return true;
+      if (this.zkProver) {
+        await this.zkProver.init();
+        this.isInitialized = true;
+        return true;
+      }
+      return false;
     } catch (error) {
       console.error("Failed to initialize ZK prover:", error);
       return false;
@@ -65,6 +68,10 @@ export class AdvancedZkProver {
     }
     
     try {
+      if (!this.zkProver) {
+        throw new Error("ZK prover is not initialized");
+      }
+      
       // Create a mock proof for development
       const mockResult = await this.zkProver.generateProof(100);
       
@@ -98,7 +105,12 @@ export class AdvancedZkProver {
     }
     
     try {
+      if (!this.zkProver) {
+        throw new Error("ZK prover is not initialized");
+      }
+      
       // For development, we'll use a mock verification
+      // We're converting the StructuredProof to work with our existing ZkProver interface
       return await this.zkProver.verifyProof(proof.proofData, 100);
     } catch (error) {
       console.error("Error verifying ZK proof:", error);

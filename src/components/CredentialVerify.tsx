@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { AdvancedZkProver } from '@/lib/advanced-zkp';
+import { AdvancedZkProver, StructuredProof } from '@/lib/advanced-zkp';
 import { SubstrateClient } from '@/lib/substrate-client';
 import { Spinner } from '@/components/ui/spinner';
 import { CheckCircle2, XCircle } from 'lucide-react';
@@ -37,7 +37,7 @@ export function CredentialVerify() {
     setResult(null);
 
     try {
-      let proofData;
+      let proofData: StructuredProof;
       try {
         proofData = JSON.parse(proofInput);
       } catch (e) {
@@ -52,8 +52,8 @@ export function CredentialVerify() {
       const substrateClient = SubstrateClient.getInstance();
       await substrateClient.connect();
       
-      // Verify the proof
-      const isVerified = await zkProver.verifyProof(proofData.proof, proofData.publicInputs);
+      // Verify the proof - updated to use the new API signature
+      const isVerified = await zkProver.verifyProof(proofData);
       
       setResult({
         verified: isVerified,
