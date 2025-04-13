@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/lib/hooks/use-auth";
 import Header from "@/components/Header";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const inter = Inter({
@@ -33,6 +34,7 @@ export default function RootLayout({
               {children}
             </AnimatePresence>
           </div>
+          <Toaster />
         </AuthProvider>
       </body>
     </html>
