@@ -31,6 +31,10 @@
   --border: 232 14% 15%;
   --input: 232 14% 15%;
   --ring: 156 84% 47%;
+
+  /* Font variables */
+  --font-geist-sans: var(--font-geist-sans);
+  --font-geist-mono: var(--font-geist-mono);
 }
 
 * {

@@ -8,6 +8,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["var(--font-geist-sans)"],
+        mono: ["var(--font-geist-mono)"]
+      },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
@@ -33,6 +37,34 @@ module.exports = {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+      },
+      animation: {
+        'glow': 'glow 3s ease-in-out infinite',
+        'glitch': 'glitch 4s infinite linear alternate-reverse',
+        'scanline': 'scanline 8s linear infinite',
+        'cyber-border': 'cyber-border 6s linear infinite',
+      },
+      keyframes: {
+        'glow': {
+          '0%, 100%': { textShadow: '0 0 10px rgba(22, 255, 177, 0.7), 0 0 20px rgba(22, 255, 177, 0.5)' },
+          '50%': { textShadow: '0 0 15px rgba(22, 255, 177, 0.9), 0 0 30px rgba(22, 255, 177, 0.7)' },
+        },
+        'glitch': {
+          '0%': { clipPath: 'inset(40% 0 61% 0)', transform: 'translate(-2px, 2px)' },
+          '20%': { clipPath: 'inset(92% 0 1% 0)', transform: 'translate(1px, 1px)' },
+          '40%': { clipPath: 'inset(43% 0 1% 0)', transform: 'translate(3px, 1px)' },
+          '60%': { clipPath: 'inset(25% 0 58% 0)', transform: 'translate(-5px, 1px)' },
+          '80%': { clipPath: 'inset(54% 0 7% 0)', transform: 'translate(2px, -3px)' },
+          '100%': { clipPath: 'inset(58% 0 43% 0)', transform: 'translate(-2px, 2px)' },
+        },
+        'scanline': {
+          '0%': { transform: 'translateY(0)' },
+          '100%': { transform: 'translateY(1000px)' },
+        },
+        'cyber-border': {
+          '0%': { filter: 'hue-rotate(0deg)' },
+          '100%': { filter: 'hue-rotate(360deg)' },
+        },
       },
     },
   },
