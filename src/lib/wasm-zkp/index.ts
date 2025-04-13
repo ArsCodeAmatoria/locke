@@ -12,77 +12,140 @@ export interface ProofInput {
   sbtIds: string[];
 }
 
+// WASM ZKP Module Integration
+
+type WasmZkModule = {
+  ZkProver: new () => WasmZkProver;
+  init: () => WasmZkProver;
+};
+
+type WasmZkProver = {
+  initialize: () => Promise<void>;
+  generate_proof: (x: number) => Promise<string>;
+  verify_proof: (proof: string, publicInput: number) => Promise<boolean>;
+};
+
+type ProofResult = {
+  success: boolean;
+  message: string;
+  publicInput?: number;
+};
+
+// Singleton pattern to manage the WASM module instance
 export class ZkProver {
-  private static instance: ZkProver;
-  private isInitialized = false;
-  
-  private constructor() {
-    // This would initialize the WASM module
-  }
-  
+  private static instance: ZkProver | null = null;
+  private module: WasmZkModule | null = null;
+  private prover: WasmZkProver | null = null;
+  private isInitializing = false;
+  private initPromise: Promise<void> | null = null;
+
+  private constructor() {}
+
   public static getInstance(): ZkProver {
     if (!ZkProver.instance) {
       ZkProver.instance = new ZkProver();
     }
     return ZkProver.instance;
   }
-  
-  public async init(): Promise<boolean> {
+
+  public async init(): Promise<void> {
+    if (this.prover) {
+      return Promise.resolve();
+    }
+
+    if (this.isInitializing) {
+      return this.initPromise as Promise<void>;
+    }
+
+    this.isInitializing = true;
+    this.initPromise = this.initializeWasm();
+    return this.initPromise;
+  }
+
+  private async initializeWasm(): Promise<void> {
     try {
-      // Simulate WASM module initialization
-      console.log('Initializing ZK prover WASM module...');
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      this.isInitialized = true;
-      console.log('ZK prover initialized successfully');
-      
-      return true;
+      if (typeof window === 'undefined') {
+        // Server-side rendering - cannot load WASM
+        console.log('WASM module not loaded in SSR');
+        return;
+      }
+
+      try {
+        // Dynamic import for Next.js - commented out for now until we have the actual WASM file
+        // this.module = await import('@/wasm-zkp/pkg/wasm_zkp');
+        // this.prover = this.module.init();
+        
+        // Using mock implementation for now
+        this.prover = this.createMockProver();
+        console.log('WASM ZKP module initialized successfully (mock)');
+      } catch (err) {
+        console.error('Failed to load WASM ZKP module:', err);
+        
+        // Fallback to mock implementation for testing/development
+        this.prover = this.createMockProver();
+        console.log('Using mock ZKP implementation');
+      }
     } catch (error) {
-      console.error('Failed to initialize ZK prover:', error);
+      console.error('Error initializing WASM module:', error);
+      throw error;
+    } finally {
+      this.isInitializing = false;
+    }
+  }
+
+  private createMockProver(): WasmZkProver {
+    return {
+      initialize: async () => {
+        console.log('Mock prover initialized');
+      },
+      generate_proof: async (x: number) => {
+        const y = x * x;
+        return JSON.stringify({
+          success: true,
+          message: `Mock proof generated for x=${x}, x²=${y}`,
+          publicInput: y
+        });
+      },
+      verify_proof: async (proof: string, publicInput: number) => {
+        const sqrt = Math.sqrt(publicInput);
+        return Math.floor(sqrt) === sqrt; // Check if perfect square
+      }
+    };
+  }
+
+  public async generateProof(x: number): Promise<ProofResult> {
+    await this.init();
+    
+    if (!this.prover) {
+      return {
+        success: false,
+        message: 'ZK prover not initialized'
+      };
+    }
+    
+    try {
+      const resultJson = await this.prover.generate_proof(x);
+      return JSON.parse(resultJson);
+    } catch (error) {
+      console.error('Error generating proof:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Unknown error generating proof'
+      };
+    }
+  }
+
+  public async verifyProof(proofStr: string, publicInput: number): Promise<boolean> {
+    await this.init();
+    
+    if (!this.prover) {
       return false;
     }
-  }
-  
-  public async generateProof(input: ProofInput): Promise<ZkProof | null> {
-    if (!this.isInitialized) {
-      await this.init();
-    }
     
     try {
-      // Simulate proof generation (this would call into the WASM module)
-      console.log('Generating ZK proof...');
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Generate a random proof string
-      const proofString = Array.from({ length: 5 }, () => Math.random().toString(36).substring(2, 15)).join('');
-      
-      return {
-        proof: proofString,
-        publicSignals: [
-          input.did,
-          ...input.sbtIds
-        ]
-      };
+      return await this.prover.verify_proof(proofStr, publicInput);
     } catch (error) {
-      console.error('Error generating ZK proof:', error);
-      return null;
-    }
-  }
-  
-  public async verifyProof(proof: ZkProof): Promise<boolean> {
-    if (!this.isInitialized) {
-      await this.init();
-    }
-    
-    try {
-      // Simulate proof verification (this would call into the WASM module)
-      console.log('Verifying ZK proof...');
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // For demo purposes, randomly succeed or fail (90% success rate)
-      return Math.random() < 0.9;
-    } catch (error) {
-      console.error('Error verifying ZK proof:', error);
+      console.error('Error verifying proof:', error);
       return false;
     }
   }

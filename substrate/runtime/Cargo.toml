@@ -1,0 +1,35 @@
+[package]
+name = "zkid-runtime"
+version = "0.1.0"
+edition = "2021"
+authors = ["zkID Team"]
+description = "Runtime for zkID Login with DID and SBT pallets"
+
+[dependencies]
+codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
+scale-info = { version = "2.1.2", default-features = false, features = ["derive"] }
+frame-support = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.42" }
+frame-system = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.42" }
+frame-executive = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.42" }
+sp-runtime = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.42" }
+sp-core = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.42" }
+sp-version = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.42" }
+
+# Local pallets
+pallet-did = { path = "../pallet-did", default-features = false }
+pallet-sbt = { path = "../pallet-sbt", default-features = false }
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "scale-info/std",
+    "frame-support/std",
+    "frame-system/std",
+    "frame-executive/std",
+    "sp-runtime/std",
+    "sp-core/std",
+    "sp-version/std",
+    "pallet-did/std",
+    "pallet-sbt/std",
+] 
