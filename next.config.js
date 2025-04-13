@@ -12,9 +12,16 @@ const nextConfig = {
     "@polkadot/api",
     "@polkadot/extension-dapp"
   ],
-  // Configure webpack to ignore optional WebSocket dependencies
+  // Configure webpack to handle WebSocket dependencies
   webpack: (config, { isServer }) => {
-    // Ignore optional dependencies of ws package
+    // Provide fallbacks for optional ws dependencies
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      bufferutil: require.resolve('./src/lib/ws-fallback.js'),
+      'utf-8-validate': require.resolve('./src/lib/ws-fallback.js')
+    };
+    
+    // Set fallbacks for browser bundles
     config.resolve.fallback = {
       ...config.resolve.fallback,
       bufferutil: false,
