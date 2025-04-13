@@ -12,7 +12,7 @@ export function Login() {
   const [accounts, setAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [extError, setExtError] = useState<string | null>(null);
-  const { isAuthenticated, identity, login, createIdentity, isLoading, error } = useAuth();
+  const auth = useAuth();
 
   // Load accounts from extension
   const loadAccounts = async () => {
@@ -47,9 +47,9 @@ export function Login() {
     }
   };
 
-  // Handle login with selected account
-  const handleLogin = async (account: any) => {
-    const success = await login(account);
+  // Handle login - no longer passing account parameter
+  const handleLogin = async () => {
+    const success = await auth.login();
     
     if (success) {
       toast({
@@ -59,15 +59,15 @@ export function Login() {
     } else {
       toast({
         title: 'Login failed',
-        description: error || 'Could not log in with the selected account',
+        description: auth.error || 'Could not log in with the selected account',
         variant: 'destructive',
       });
     }
   };
 
-  // Handle creating a new identity
-  const handleCreateIdentity = async (account: any) => {
-    const didId = await createIdentity(account);
+  // Handle creating a new identity - no longer passing account parameter
+  const handleCreateIdentity = async () => {
+    const didId = await auth.createIdentity();
     
     if (didId) {
       toast({
@@ -77,7 +77,7 @@ export function Login() {
     } else {
       toast({
         title: 'Identity creation failed',
-        description: error || 'Could not create a new identity',
+        description: auth.error || 'Could not create a new identity',
         variant: 'destructive',
       });
     }
@@ -85,13 +85,13 @@ export function Login() {
 
   // Load accounts on component mount
   useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
+    if (!auth.isAuthenticated && !auth.isLoading) {
       loadAccounts();
     }
-  }, [isAuthenticated, isLoading]);
+  }, [auth.isAuthenticated, auth.isLoading]);
 
   // Render loader while checking auth state
-  if (isLoading) {
+  if (auth.isLoading) {
     return (
       <div className="flex justify-center items-center p-8">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -101,7 +101,7 @@ export function Login() {
   }
 
   // Render authenticated state
-  if (isAuthenticated && identity) {
+  if (auth.isAuthenticated && auth.identity) {
     return (
       <Card className="p-6 max-w-md mx-auto">
         <div className="flex flex-col items-center text-center">
@@ -112,10 +112,10 @@ export function Login() {
           </p>
           <div className="bg-muted p-3 rounded-md w-full mb-4">
             <p className="font-mono text-sm break-all">
-              <span className="font-bold">DID:</span> {identity.did}
+              <span className="font-bold">DID:</span> {auth.identity.did}
             </p>
             <p className="font-mono text-sm mt-2 break-all">
-              <span className="font-bold">Account:</span> {identity.address}
+              <span className="font-bold">Account:</span> {auth.identity.address}
             </p>
           </div>
         </div>
@@ -169,14 +169,14 @@ export function Login() {
                       <Button 
                         size="sm" 
                         variant="outline"
-                        onClick={() => handleCreateIdentity(account)}
+                        onClick={handleCreateIdentity}
                       >
                         <UserPlus className="h-4 w-4 mr-1" />
                         New ID
                       </Button>
                       <Button 
                         size="sm"
-                        onClick={() => handleLogin(account)}
+                        onClick={handleLogin}
                       >
                         <ChevronRight className="h-4 w-4" />
                       </Button>

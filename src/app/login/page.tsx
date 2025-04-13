@@ -15,21 +15,13 @@ export default function LoginPage() {
   const auth = useAuth();
   const [step, setStep] = useState<LoginStep>('connect-wallet');
   const [localError, setLocalError] = useState<string | null>(null);
-  const [account, setAccount] = useState<{address: string} | null>(null);
 
   const handleConnectWallet = async () => {
     setLocalError(null);
     
     try {
-      // Create mock account for demo purposes
-      const mockAccount = {
-        address: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'
-      };
-      
-      setAccount(mockAccount);
-      
-      // Use auth directly to avoid type issues
-      const success = await auth.login(mockAccount);
+      // Call login without parameters now
+      const success = await auth.login();
       
       if (success) {
         setStep('create-identity');
@@ -44,14 +36,14 @@ export default function LoginPage() {
   const handleCreateIdentity = async () => {
     setLocalError(null);
     
-    if (!account) {
+    if (!auth.account) {
       setLocalError('No account connected. Please connect your wallet first.');
       return;
     }
     
     try {
-      // Use auth directly to avoid type issues
-      const didId = await auth.createIdentity(account);
+      // Call createIdentity without parameters now
+      const didId = await auth.createIdentity();
       
       if (didId) {
         setStep('verify-identity');
