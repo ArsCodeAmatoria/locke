@@ -1,5 +1,5 @@
 import { MultiChainIdentity } from '@/components/MultiChainIdentity';
-import { PageTitle } from '@/components/PageTitle';
+import { PageTitle } from '@/components/ui/page-title';
 
 export const metadata = {
   title: 'Multi-Chain Identity | zkID Login',

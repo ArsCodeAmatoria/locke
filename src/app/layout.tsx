@@ -1,6 +1,5 @@
 'use client';
 
-import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { AnimatePresence } from "framer-motion";
 import Header from "@/components/Header";
@@ -17,11 +16,6 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
   variable: "--font-mono",
 });
-
-export const metadata: Metadata = {
-  title: "zkID Login - Identity Verification",
-  description: "Decentralized identity verification powered by zero-knowledge cryptography",
-};
 
 export default function RootLayout({
   children,
