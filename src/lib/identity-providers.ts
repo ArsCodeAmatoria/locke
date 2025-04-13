@@ -457,4 +457,87 @@ export class IdentityProviderRegistry {
 }
 
 // Export a singleton instance
-export const identityProviderRegistry = IdentityProviderRegistry.getInstance(); 
+export const identityProviderRegistry = IdentityProviderRegistry.getInstance();
+
+// Social identity providers for authentication
+
+export interface SocialProvider {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  authUrl: string;
+}
+
+export const socialProviders: SocialProvider[] = [
+  {
+    id: 'google',
+    name: 'Google',
+    icon: '/social/google.svg',
+    description: 'Sign in with your Google account',
+    authUrl: '/api/auth/google'
+  },
+  {
+    id: 'github',
+    name: 'GitHub',
+    icon: '/social/github.svg',
+    description: 'Sign in with your GitHub account',
+    authUrl: '/api/auth/github'
+  },
+  {
+    id: 'twitter',
+    name: 'Twitter',
+    icon: '/social/twitter.svg',
+    description: 'Sign in with your Twitter account',
+    authUrl: '/api/auth/twitter'
+  },
+  {
+    id: 'discord',
+    name: 'Discord',
+    icon: '/social/discord.svg', 
+    description: 'Sign in with your Discord account',
+    authUrl: '/api/auth/discord'
+  }
+];
+
+export function getSocialProvider(id: string): SocialProvider | undefined {
+  return socialProviders.find(provider => provider.id === id);
+}
+
+// Mock social authentication function for demonstration purposes
+export async function authenticateWithSocial(providerId: string): Promise<{ success: boolean; userId?: string; error?: string }> {
+  // This would normally connect to a real OAuth flow
+  return new Promise((resolve) => {
+    // Simulate network delay
+    setTimeout(() => {
+      // 90% success rate for demo
+      if (Math.random() > 0.1) {
+        resolve({
+          success: true,
+          userId: `user_${Math.random().toString(36).substring(2, 10)}`
+        });
+      } else {
+        resolve({
+          success: false,
+          error: 'Authentication failed. Please try again.'
+        });
+      }
+    }, 1000);
+  });
+}
+
+// Get a verified claim from social login
+export async function getVerifiedClaim(providerId: string, userId: string): Promise<{ 
+  type: string; 
+  value: string;
+  issuer: string;
+  issuedAt: string;
+}> {
+  // This would normally fetch real verified claims from the OAuth provider
+  return {
+    type: providerId === 'google' ? 'email' : 'username',
+    value: providerId === 'google' ? 'user@example.com' : userId,
+    issuer: getSocialProvider(providerId)?.name || providerId,
+    issuedAt: new Date().toISOString()
+  };
+} 

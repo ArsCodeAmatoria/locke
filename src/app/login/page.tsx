@@ -3,10 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Wallet, Shield, Lock, FileBadge, KeyRound, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { socialProviders, SocialProvider } from '@/lib/identity-providers';
 
 type LoginStep = 'connect-wallet' | 'create-identity' | 'verify-identity' | 'complete';
 
@@ -15,12 +19,13 @@ export default function LoginPage() {
   const auth = useAuth();
   const [step, setStep] = useState<LoginStep>('connect-wallet');
   const [localError, setLocalError] = useState<string | null>(null);
+  const [socialLoginInProgress, setSocialLoginInProgress] = useState<string | null>(null);
 
   const handleConnectWallet = async () => {
     setLocalError(null);
     
     try {
-      // Call login without parameters now
+      // Call login without parameters for wallet login
       const success = await auth.login();
       
       if (success) {
@@ -33,6 +38,26 @@ export default function LoginPage() {
     }
   };
 
+  const handleSocialLogin = async (provider: SocialProvider) => {
+    setLocalError(null);
+    setSocialLoginInProgress(provider.id);
+    
+    try {
+      // Call login with the social provider ID
+      const success = await auth.login(provider.id);
+      
+      if (success) {
+        setStep('create-identity');
+      } else {
+        setLocalError(`Login with ${provider.name} failed. Please try again.`);
+      }
+    } catch (err) {
+      setLocalError('Failed to authenticate. Please try again.');
+    } finally {
+      setSocialLoginInProgress(null);
+    }
+  };
+
   const handleCreateIdentity = async () => {
     setLocalError(null);
     
@@ -42,8 +67,13 @@ export default function LoginPage() {
     }
     
     try {
-      // Call createIdentity without parameters now
-      const didId = await auth.createIdentity();
+      // Determine if this is a social login
+      const isSocialAccount = auth.account.provider !== undefined;
+      
+      // Call createIdentity with userId for social accounts
+      const didId = isSocialAccount 
+        ? await auth.createIdentity(auth.account.userId)
+        : await auth.createIdentity();
       
       if (didId) {
         setStep('verify-identity');
@@ -94,14 +124,14 @@ export default function LoginPage() {
             >
               <div className="flex items-center gap-3 mb-6">
                 <Wallet className="h-6 w-6 text-emerald-400" />
-                <h2 className="text-lg font-bold text-emerald-400">Connect Wallet</h2>
+                <h2 className="text-lg font-bold text-emerald-400">Connect to Continue</h2>
               </div>
               
               <p className="text-sm text-slate-700 dark:text-slate-300 mb-4">
-                Connect your Polkadot wallet to access your decentralized identity.
+                Connect your Polkadot wallet or use a social account to access your decentralized identity.
               </p>
               
-              <button
+              <Button
                 onClick={handleConnectWallet}
                 disabled={auth.isLoading}
                 className="w-full bg-emerald-500 text-white py-2 px-4 rounded-md hover:bg-emerald-600 transition flex items-center justify-center"
@@ -117,7 +147,44 @@ export default function LoginPage() {
                     Connect Polkadot Wallet
                   </>
                 )}
-              </button>
+              </Button>
+              
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <Separator className="w-full" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-background px-2 text-xs text-muted-foreground">
+                    OR CONTINUE WITH
+                  </span>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                {socialProviders.map((provider) => (
+                  <Button
+                    key={provider.id}
+                    onClick={() => handleSocialLogin(provider)}
+                    disabled={auth.isLoading || socialLoginInProgress !== null}
+                    variant="outline"
+                    className="py-5 flex items-center justify-center"
+                  >
+                    {socialLoginInProgress === provider.id ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <div className="mr-2 h-4 w-4 relative">
+                        <Image 
+                          src={provider.icon} 
+                          alt={provider.name} 
+                          fill 
+                          className="object-contain"
+                        />
+                      </div>
+                    )}
+                    {provider.name}
+                  </Button>
+                ))}
+              </div>
               
               {displayError && (
                 <div className="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-500/20 rounded text-sm text-red-600 dark:text-red-400 flex items-start mt-4">
@@ -142,9 +209,14 @@ export default function LoginPage() {
               
               <p className="text-sm text-slate-700 dark:text-slate-300 mb-4">
                 Create your decentralized identifier (DID) to proceed with secure authentication.
+                {auth.account?.provider && (
+                  <span className="block mt-2">
+                    We'll link your {auth.account.provider} account to your DID.
+                  </span>
+                )}
               </p>
               
-              <button
+              <Button
                 onClick={handleCreateIdentity}
                 disabled={auth.isLoading}
                 className="w-full bg-emerald-500 text-white py-2 px-4 rounded-md hover:bg-emerald-600 transition flex items-center justify-center"
@@ -157,7 +229,7 @@ export default function LoginPage() {
                 ) : (
                   <>Create Decentralized Identity</>
                 )}
-              </button>
+              </Button>
               
               {displayError && (
                 <div className="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-500/20 rounded text-sm text-red-600 dark:text-red-400 flex items-start mt-4">
@@ -166,13 +238,14 @@ export default function LoginPage() {
                 </div>
               )}
               
-              <button
+              <Button
                 onClick={reset}
                 disabled={auth.isLoading}
                 className="text-sm text-slate-500 hover:text-emerald-500 transition-colors flex items-center"
+                variant="ghost"
               >
                 Back
-              </button>
+              </Button>
             </motion.div>
           )}
           
@@ -192,7 +265,7 @@ export default function LoginPage() {
                 Generate a zero-knowledge proof to verify your identity while maintaining privacy.
               </p>
               
-              <button
+              <Button
                 onClick={verifyIdentity}
                 disabled={auth.isLoading}
                 className="w-full bg-emerald-500 text-white py-2 px-4 rounded-md hover:bg-emerald-600 transition flex items-center justify-center"
@@ -205,7 +278,7 @@ export default function LoginPage() {
                 ) : (
                   <>Verify with Zero-Knowledge Proof</>
                 )}
-              </button>
+              </Button>
               
               {displayError && (
                 <div className="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-500/20 rounded text-sm text-red-600 dark:text-red-400 flex items-start mt-4">
@@ -214,13 +287,14 @@ export default function LoginPage() {
                 </div>
               )}
               
-              <button
+              <Button
                 onClick={reset}
                 disabled={auth.isLoading}
                 className="text-sm text-slate-500 hover:text-emerald-500 transition-colors flex items-center"
+                variant="ghost"
               >
                 Back
-              </button>
+              </Button>
             </motion.div>
           )}
           
