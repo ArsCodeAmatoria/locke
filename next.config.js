@@ -3,17 +3,13 @@ const nextConfig = {
   reactStrictMode: true,
   // Disabled swcMinify to avoid issues during deployment
   swcMinify: false,
-  // Disable image optimization for simplified deployment
-  images: {
-    unoptimized: true
-  },
-  // Transpile specific problematic dependencies
-  transpilePackages: [
-    "@polkadot/api",
-    "@polkadot/extension-dapp"
-  ],
-  // Configure webpack to handle WebSocket dependencies
-  webpack: (config, { isServer }) => {
+  // Disable Terser minification completely since it's causing syntax errors
+  webpack: (config, { dev, isServer }) => {
+    // Disable Terser only in production builds
+    if (!dev && !isServer) {
+      config.optimization.minimizer = [];
+    }
+    
     // Provide fallbacks for optional ws dependencies
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -30,6 +26,15 @@ const nextConfig = {
     
     return config;
   },
+  // Disable image optimization for simplified deployment
+  images: {
+    unoptimized: true
+  },
+  // Transpile specific problematic dependencies
+  transpilePackages: [
+    "@polkadot/api",
+    "@polkadot/extension-dapp"
+  ],
 };
 
 module.exports = nextConfig; 
