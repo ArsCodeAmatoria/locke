@@ -2,6 +2,8 @@
 
 import { FadeIn, SlideIn, ScaleIn, CyberGlitch } from '@/components/ui/motion-component';
 import { TerminalType, CyberGrid, GlitchReveal, DigitalNoise } from '@/components/ui/advanced-motion';
+import { LoadingSpinner, CyberLoadingBar } from '@/components/ui/loading-spinner';
+import { CyberTransition } from '@/components/page-transition';
 import { motion } from 'framer-motion';
 
 export default function MotionDemoPage() {
@@ -16,7 +18,7 @@ export default function MotionDemoPage() {
   };
 
   return (
-    <div className="min-h-screen p-8">
+    <CyberTransition className="min-h-screen p-8">
       <FadeIn className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-8 cyber-glow">Framer Motion Components</h1>
       </FadeIn>
@@ -116,6 +118,32 @@ export default function MotionDemoPage() {
         
         <div className="hacker-divider"></div>
         
+        <FadeIn delay={2.0} className="mb-12">
+          <div className="cyber-card p-6 cyber-scanline">
+            <h2 className="text-2xl font-bold mb-6 cyber-glow">Loading Components</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex flex-col items-center gap-4 p-4 bg-muted/20 rounded">
+                <h3 className="text-xl cyber-glow">Cyber Loading Spinner</h3>
+                <LoadingSpinner size={80} />
+                <p className="text-center text-sm text-muted-foreground">
+                  Fully customizable spinner with size and color props
+                </p>
+              </div>
+              
+              <div className="flex flex-col items-center gap-4 p-4 bg-muted/20 rounded">
+                <h3 className="text-xl cyber-glow">Cyber Loading Bar</h3>
+                <CyberLoadingBar width={250} />
+                <p className="text-center text-sm text-muted-foreground">
+                  Progress bar with cyberpunk glitch effect
+                </p>
+              </div>
+            </div>
+          </div>
+        </FadeIn>
+        
+        <div className="hacker-divider"></div>
+        
         <FadeIn delay={2.0} className="mt-12">
           <div className="cyber-card p-6 cyber-scanline">
             <h2 className="text-2xl font-bold mb-6 cyber-glow">Combined Effects Demo</h2>
@@ -146,6 +174,6 @@ export default function MotionDemoPage() {
           </div>
         </FadeIn>
       </div>
-    </div>
+    </CyberTransition>
   );
 } 
