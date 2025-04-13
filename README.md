@@ -16,6 +16,7 @@ A decentralized identity verification system built on Polkadot and Substrate wit
 - **Cross-Chain Identity Resolution**: Link DIDs across different blockchains
 - **Cyberpunk-inspired UI**: Modern interface with neon aesthetics
 - **Responsive Design**: Optimized for desktop and mobile devices
+- **Enhanced Authentication Flow**: Improved UX for wallet connection, identity creation, and verification
 
 ## Tech Stack
 
@@ -24,6 +25,15 @@ A decentralized identity verification system built on Polkadot and Substrate wit
 - **ZK Proofs**: WASM-compiled Rust using bellman, bls12_381 for cryptographic operations
 - **Blockchain**: Substrate pallets for DID and SBT with custom runtime
 - **Multi-Chain**: Chain-agnostic DID resolver for cross-chain identity resolution
+- **Authentication**: React Context-based authentication with wallet integration
+
+## Recent Updates
+
+- **Enhanced Login Component**: Improved multi-step login flow with better error handling and state management
+- **Auth Hook Improvements**: Updated useAuth hook with account parameter support for login and identity creation
+- **Error Handling**: Better error display with localized and context-aware error messages
+- **Loading States**: Improved loading state management for better user feedback
+- **Responsive Design**: More responsive design for better mobile experience
 
 ## Getting Started
 
