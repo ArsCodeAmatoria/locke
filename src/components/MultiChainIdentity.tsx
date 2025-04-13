@@ -46,13 +46,20 @@ export function MultiChainIdentity() {
   const [selectedChain, setSelectedChain] = useState<ChainType | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isLinking, setIsLinking] = useState(false);
+  const [availableChains, setAvailableChains] = useState<ChainType[]>([]);
 
   // Initialize chains on component mount
   useEffect(() => {
     const initChains = async () => {
       try {
-        // Initialize with Substrate and Ethereum by default
-        await initialize([ChainType.SUBSTRATE, ChainType.ETHEREUM]);
+        // Initialize with all supported chains
+        await initialize([
+          ChainType.SUBSTRATE, 
+          ChainType.ETHEREUM,
+          ChainType.SOLANA,
+          ChainType.COSMOS,
+          ChainType.NEAR
+        ]);
       } catch (error) {
         console.error('Failed to initialize chains:', error);
         // The state will be updated by the initialize function
@@ -64,6 +71,11 @@ export function MultiChainIdentity() {
       initChains();
     }
   }, [isReady, isInitializing, initialize]);
+
+  // Get available chains
+  useEffect(() => {
+    setAvailableChains(supportedChains.filter(chain => !initializedChains.includes(chain)));
+  }, [supportedChains, initializedChains]);
 
   // Handle DID resolution
   const handleResolveDid = async () => {
@@ -137,6 +149,39 @@ export function MultiChainIdentity() {
     }
   };
 
+  // Connect a new chain
+  const handleConnectChain = async (chainType: ChainType) => {
+    try {
+      await initialize([chainType]);
+    } catch (error) {
+      console.error(`Failed to connect ${chainType} chain:`, error);
+    }
+  };
+
+  // Get color for chain badge
+  const getChainColor = (chain: ChainType): string => {
+    const colors: Record<ChainType, string> = {
+      [ChainType.SUBSTRATE]: 'bg-emerald-100 text-emerald-800',
+      [ChainType.ETHEREUM]: 'bg-blue-100 text-blue-800',
+      [ChainType.SOLANA]: 'bg-purple-100 text-purple-800',
+      [ChainType.COSMOS]: 'bg-indigo-100 text-indigo-800',
+      [ChainType.NEAR]: 'bg-yellow-100 text-yellow-800',
+    };
+    return colors[chain] || 'bg-gray-100 text-gray-800';
+  };
+
+  // Get name for chain
+  const getChainName = (chain: ChainType): string => {
+    const names: Record<ChainType, string> = {
+      [ChainType.SUBSTRATE]: 'Polkadot/Kusama',
+      [ChainType.ETHEREUM]: 'Ethereum/Polygon',
+      [ChainType.SOLANA]: 'Solana',
+      [ChainType.COSMOS]: 'Cosmos Hub',
+      [ChainType.NEAR]: 'NEAR Protocol',
+    };
+    return names[chain] || chain;
+  };
+
   // Render loading state
   if (isInitializing) {
     return (
@@ -175,17 +220,53 @@ export function MultiChainIdentity() {
           <h2 className="text-xl font-semibold">Multi-Chain Identity</h2>
         </div>
 
-        {/* Initialized Chains */}
+        {/* Supported Blockchains */}
+        <div className="rounded-md bg-slate-50 p-4 dark:bg-slate-900">
+          <h3 className="mb-3 font-medium">Supported Blockchains</h3>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+            {Object.values(ChainType).map((chain) => (
+              <div
+                key={chain}
+                className={`px-3 py-2 rounded-md ${
+                  initializedChains.includes(chain) 
+                    ? 'bg-emerald-50 border border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-900' 
+                    : 'bg-slate-100 border border-slate-200 dark:bg-slate-800 dark:border-slate-700'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">{getChainName(chain)}</span>
+                  {initializedChains.includes(chain) && (
+                    <span className="flex items-center text-xs text-emerald-600 dark:text-emerald-400">
+                      <Check className="h-3 w-3 mr-1" /> Connected
+                    </span>
+                  )}
+                </div>
+                {!initializedChains.includes(chain) && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="mt-2 w-full text-xs h-7"
+                    onClick={() => handleConnectChain(chain)}
+                  >
+                    Connect
+                  </Button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Connected Chains */}
         <div className="rounded-md bg-slate-50 p-4 dark:bg-slate-900">
           <h3 className="mb-3 font-medium">Connected Blockchains</h3>
           <div className="flex flex-wrap gap-2">
             {initializedChains.map((chain) => (
               <div 
                 key={chain} 
-                className="flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                className={`flex items-center rounded-full px-3 py-1 text-xs font-medium ${getChainColor(chain)}`}
               >
                 <Database className="mr-1 h-3 w-3" />
-                {chain}
+                {getChainName(chain)}
               </div>
             ))}
           </div>
@@ -232,7 +313,7 @@ export function MultiChainIdentity() {
               </div>
             </div>
           </FadeIn>
-        ) : (
+        ) :
           <div className="rounded-md border border-dashed p-6 text-center">
             <Shield className="mx-auto h-8 w-8 text-muted-foreground" />
             <h3 className="mt-2 font-medium">No Active Identity</h3>
@@ -240,7 +321,7 @@ export function MultiChainIdentity() {
               Resolve an existing DID or create a new one to get started
             </p>
           </div>
-        )}
+        }
 
         {/* Actions */}
         <div className="space-y-4">
@@ -276,9 +357,9 @@ export function MultiChainIdentity() {
                 className="rounded-md border px-3 py-2 text-sm"
               >
                 <option value="">Select Blockchain</option>
-                {supportedChains.map((chain) => (
+                {initializedChains.map((chain) => (
                   <option key={chain} value={chain}>
-                    {chain}
+                    {getChainName(chain)}
                   </option>
                 ))}
               </select>
@@ -320,16 +401,18 @@ export function MultiChainIdentity() {
         </div>
 
         {/* Disconnect Button */}
-        <div className="pt-4">
-          <Button 
-            onClick={disconnect} 
-            variant="outline" 
-            className="w-full"
-          >
-            <Unlink className="mr-2 h-4 w-4" />
-            Disconnect All Chains
-          </Button>
-        </div>
+        {initializedChains.length > 0 && (
+          <div className="pt-4 border-t">
+            <Button 
+              variant="outline" 
+              onClick={disconnect} 
+              className="w-full"
+            >
+              <Unlink className="mr-2 h-4 w-4" />
+              Disconnect All Chains
+            </Button>
+          </div>
+        )}
       </div>
     </Card>
   );
