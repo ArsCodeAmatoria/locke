@@ -3,7 +3,7 @@ import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Wallet, CircleX, Loader2 } from 'lucide-react';
+import { Wallet, CircleX, Loader2, ShieldAlert, ShieldCheck, KeyRound } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface WalletLoginProps {
@@ -51,63 +51,93 @@ export function WalletLogin({ onAccountSelect }: WalletLoginProps) {
   };
   
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Wallet className="h-5 w-5" />
-          Polkadot Wallet Login
+    <Card className="cyber-card backdrop-blur-sm w-full max-w-md">
+      <CardHeader className="border-b border-emerald-400/20">
+        <CardTitle className="flex items-center gap-2 terminal-text">
+          <Wallet className="h-5 w-5 text-emerald-400" />
+          Polkadot Wallet Authentication
         </CardTitle>
-        <CardDescription>
-          Connect your Polkadot wallet to access zkID services
+        <CardDescription className="text-slate-400">
+          Connect your blockchain wallet to access secure identity verification
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="mt-4">
         {error && (
-          <div className="bg-red-50 p-3 rounded-md flex items-center gap-2 mb-4 text-red-700">
-            <CircleX className="h-5 w-5" />
-            <p className="text-sm">{error}</p>
+          <div className="bg-black/50 p-3 rounded-md flex items-center gap-2 mb-4 text-red-400 border border-red-900/50">
+            <ShieldAlert className="h-5 w-5 text-red-400" />
+            <div>
+              <p className="text-sm font-mono">ERROR: AUTHENTICATION FAILED</p>
+              <p className="text-xs">{error}</p>
+            </div>
           </div>
         )}
         
         {accounts.length === 0 ? (
-          <Button 
-            className="w-full" 
-            onClick={connectWallet} 
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Connecting...
-              </>
-            ) : (
-              <>
-                <Wallet className="mr-2 h-4 w-4" />
-                Connect Wallet
-              </>
-            )}
-          </Button>
+          <div>
+            <div className="p-3 bg-black/40 rounded-md border border-emerald-400/20 mb-4">
+              <p className="text-sm text-slate-300 font-mono mb-1">
+                <span className="text-emerald-400">{`>`}</span> SECURE AUTHENTICATION PROTOCOL
+              </p>
+              <p className="text-xs text-slate-500">
+                Connect your Polkadot extension to verify your blockchain identity. Protect your data with zero-knowledge proofs.
+              </p>
+            </div>
+            
+            <button 
+              className="cyber-button w-full" 
+              onClick={connectWallet} 
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  INITIALIZING CONNECTION...
+                </>
+              ) : (
+                <>
+                  <KeyRound className="mr-2 h-4 w-4" />
+                  ESTABLISH SECURE CONNECTION
+                </>
+              )}
+            </button>
+          </div>
         ) : (
-          <div className="space-y-2">
-            <p className="text-sm text-gray-500 mb-2">Select an account:</p>
+          <div className="space-y-3">
+            <div className="p-2 bg-black/40 rounded-md border border-emerald-400/20 mb-2">
+              <p className="text-xs text-emerald-400 font-mono">
+                <ShieldCheck className="h-3 w-3 inline-block mr-1" />
+                IDENTITIES DETECTED: {accounts.length}
+              </p>
+            </div>
+            
+            <p className="text-sm text-slate-300 font-mono">SELECT ACCOUNT:</p>
+            
             {accounts.map((account) => (
-              <Button
+              <button
                 key={account.address}
-                variant="outline"
-                className="w-full justify-start text-left"
+                className="w-full bg-black/30 border border-emerald-400/30 hover:border-emerald-400/60 rounded-md p-3 text-left transition-all"
                 onClick={() => handleAccountSelect(account)}
               >
-                <div className="truncate">
-                  <p className="font-medium">{account.meta.name}</p>
-                  <p className="text-xs text-gray-500 truncate">{account.address}</p>
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-full bg-emerald-900/30 border border-emerald-400/40 flex items-center justify-center">
+                    <Wallet className="h-4 w-4 text-emerald-400" />
+                  </div>
+                  <div className="overflow-hidden">
+                    <p className="font-medium text-emerald-400 terminal-text">
+                      {account.meta.name}
+                    </p>
+                    <p className="text-xs text-slate-500 font-mono truncate">
+                      {account.address.substring(0, 8)}...{account.address.substring(account.address.length - 8)}
+                    </p>
+                  </div>
                 </div>
-              </Button>
+              </button>
             ))}
           </div>
         )}
       </CardContent>
-      <CardFooter className="flex justify-center text-xs text-gray-500">
-        Your credentials will be verified without revealing personal data
+      <CardFooter className="flex justify-center text-xs text-slate-500 border-t border-emerald-400/20 pt-4">
+        <p className="font-mono">ZERO-KNOWLEDGE VERIFICATION · SUBSTRATE NETWORK · SECURE</p>
       </CardFooter>
     </Card>
   );

@@ -9,6 +9,8 @@ import { SubstrateClient, UserIdentity } from '@/lib/substrate-client';
 import { ZkProver } from '@/lib/wasm-zkp';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
+import { Terminal, Shield, CircuitBoard } from 'lucide-react';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [selectedAccount, setSelectedAccount] = useState<InjectedAccountWithMeta | null>(null);
@@ -115,41 +117,105 @@ export default function LoginPage() {
   };
   
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="container mx-auto py-10">
-        <h1 className="text-3xl font-bold text-center mb-10">zkID Login</h1>
-        
-        {!selectedAccount && (
-          <WalletLogin onAccountSelect={handleAccountSelect} />
-        )}
-        
-        {selectedAccount && userIdentity && (
-          <CredentialDisplay 
-            account={selectedAccount}
-            credentials={{
-              did: userIdentity.did.id,
-              sbts: userIdentity.sbts,
-              verificationStatus
-            }}
-            onLogout={handleLogout}
-            onRequestProof={handleRequestProof}
-          />
-        )}
-        
-        {isGeneratingProof && userIdentity && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="w-full max-w-md mx-auto">
-              <ProofGenerator
-                did={userIdentity.did.id}
-                onProofGenerated={handleProofGenerated}
-                onClose={() => setIsGeneratingProof(false)}
-              />
+    <div className="min-h-screen bg-background cyber-scanline">
+      <div className="container mx-auto py-8 px-4">
+        <header className="mb-10">
+          <div className="flex justify-between items-center mb-6">
+            <Link href="/" className="text-emerald-400 hover:text-emerald-300 flex items-center">
+              <span className="w-8 h-8 rounded border border-emerald-400/40 flex items-center justify-center mr-2">
+                <Terminal size={16} />
+              </span>
+              <span className="terminal-text">Return to Main Terminal</span>
+            </Link>
+            <div className="px-2 py-1 bg-black/30 border border-emerald-400/30 rounded-md">
+              <span className="text-xs text-slate-500 font-mono">NODE STATUS: <span className="text-emerald-400">ONLINE</span></span>
             </div>
           </div>
-        )}
+          
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold cyber-glow terminal-text mb-2">SECURE ACCESS TERMINAL</h1>
+            <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-purple-500 mx-auto"></div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-6">
+            <div className="p-2 bg-black/30 border border-emerald-400/20 rounded flex items-center">
+              <Shield className="h-4 w-4 text-emerald-400 mr-2" />
+              <span className="text-xs text-slate-400 font-mono">IDENTITY VERIFICATION</span>
+            </div>
+            <div className="p-2 bg-black/30 border border-emerald-400/20 rounded flex items-center">
+              <CircuitBoard className="h-4 w-4 text-emerald-400 mr-2" />
+              <span className="text-xs text-slate-400 font-mono">CRYPTOGRAPHIC PROTOCOL ACTIVE</span>
+            </div>
+            <div className="p-2 bg-black/30 border border-emerald-400/20 rounded flex items-center">
+              <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse mr-2"></div>
+              <span className="text-xs text-slate-400 font-mono overflow-hidden">
+                SESSION: {Math.floor(Math.random() * 0xffffffff).toString(16).toUpperCase()}
+              </span>
+            </div>
+          </div>
+        </header>
         
-        <Toaster position="top-center" />
+        <div className="flex flex-col items-center justify-center">
+          {!selectedAccount && (
+            <div className="w-full max-w-md">
+              <div className="mb-4 p-2 bg-black/30 border border-emerald-400/20 rounded">
+                <p className="text-sm text-slate-300 font-mono">
+                  <span className="text-emerald-400">{`>`}</span> AUTHENTICATION REQUIRED
+                </p>
+                <p className="text-xs text-slate-500 font-mono">
+                  Connect your Polkadot.js wallet to authorize access
+                </p>
+              </div>
+              <WalletLogin onAccountSelect={handleAccountSelect} />
+            </div>
+          )}
+          
+          {selectedAccount && userIdentity && (
+            <div className="w-full max-w-md">
+              <div className="mb-4 p-2 bg-black/30 border border-emerald-400/20 rounded">
+                <p className="text-sm text-emerald-400 font-mono">
+                  <span className="text-emerald-400">{`>`}</span> AUTHENTICATION SUCCESSFUL
+                </p>
+                <p className="text-xs text-slate-500 font-mono">
+                  Decentralized Identity connected: {userIdentity.did.id.substring(0, 12)}...
+                </p>
+              </div>
+              <CredentialDisplay 
+                account={selectedAccount}
+                credentials={{
+                  did: userIdentity.did.id,
+                  sbts: userIdentity.sbts,
+                  verificationStatus
+                }}
+                onLogout={handleLogout}
+                onRequestProof={handleRequestProof}
+              />
+            </div>
+          )}
+          
+          {isGeneratingProof && userIdentity && (
+            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+              <div className="w-full max-w-md mx-auto">
+                <ProofGenerator
+                  did={userIdentity.did.id}
+                  onProofGenerated={handleProofGenerated}
+                  onClose={() => setIsGeneratingProof(false)}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <footer className="mt-16 pt-4 border-t border-emerald-400/20">
+          <div className="flex justify-between items-center text-xs text-slate-600 font-mono">
+            <span>SYSTEM v0.1.3</span>
+            <span>ENCRYPTION: ACTIVE</span>
+            <span>BLOCKCHAIN: CONNECTED</span>
+          </div>
+        </footer>
       </div>
+      
+      <Toaster position="top-center" />
     </div>
   );
 } 
