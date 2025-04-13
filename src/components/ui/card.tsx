@@ -93,17 +93,33 @@ export function CardGrid({
     xl?: number;
   };
 }) {
-  // Build the responsive grid class
-  const gridCols = [
-    `grid-cols-${columns.default}`,
-    columns.sm && `sm:grid-cols-${columns.sm}`,
-    columns.md && `md:grid-cols-${columns.md}`,
-    columns.lg && `lg:grid-cols-${columns.lg}`,
-    columns.xl && `xl:grid-cols-${columns.xl}`,
-  ].filter(Boolean).join(' ');
+  // Build the responsive grid classes
+  const gridClasses = [];
+  
+  if (columns.default) {
+    gridClasses.push(`grid-cols-${columns.default}`);
+  }
+  
+  if (columns.sm) {
+    gridClasses.push(`sm:grid-cols-${columns.sm}`);
+  }
+  
+  if (columns.md) {
+    gridClasses.push(`md:grid-cols-${columns.md}`);
+  }
+  
+  if (columns.lg) {
+    gridClasses.push(`lg:grid-cols-${columns.lg}`);
+  }
+  
+  if (columns.xl) {
+    gridClasses.push(`xl:grid-cols-${columns.xl}`);
+  }
+  
+  const gridColsClass = gridClasses.join(' ');
 
   return (
-    <div className={`grid ${gridCols} gap-6 ${className}`}>
+    <div className={`grid ${gridColsClass} gap-6 ${className}`}>
       {children}
     </div>
   );
@@ -112,16 +128,19 @@ export function CardGrid({
 export function CardContainer({ 
   children, 
   className = '',
-  maxWidth = '4xl', // xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl, 7xl
+  maxWidth = '4xl',
   centered = true
 }: { 
   children: ReactNode; 
   className?: string;
-  maxWidth?: string;
+  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | '7xl' | 'none';
   centered?: boolean;
 }) {
+  // Get the correct max-width class
+  const maxWidthClass = maxWidth === 'none' ? '' : `max-w-${maxWidth}`;
+  
   return (
-    <div className={`${centered ? 'mx-auto' : ''} max-w-${maxWidth} ${className}`}>
+    <div className={`${centered ? 'mx-auto' : ''} ${maxWidthClass} ${className}`}>
       {children}
     </div>
   );

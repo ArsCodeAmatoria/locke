@@ -7,7 +7,7 @@ interface LayoutWrapperProps {
   children: ReactNode;
   className?: string;
   centered?: boolean;
-  maxWidth?: string;
+  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | '7xl' | 'none';
   withPadding?: boolean;
   withTransition?: boolean;
 }
@@ -20,12 +20,15 @@ export default function LayoutWrapper({
   withPadding = true,
   withTransition = true,
 }: LayoutWrapperProps) {
+  // Get the correct max-width class
+  const maxWidthClass = maxWidth === 'none' ? '' : `max-w-${maxWidth}`;
+  
   const content = (
     <main 
       className={`
         ${withPadding ? 'px-4 py-8 sm:px-6 sm:py-10 md:py-12' : ''}
         ${centered ? 'mx-auto' : ''}
-        ${`max-w-${maxWidth}`}
+        ${maxWidthClass}
         ${className}
       `}
     >
@@ -97,14 +100,17 @@ export function Container({
 }: {
   children: ReactNode;
   className?: string;
-  maxWidth?: string;
+  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | '7xl' | 'none';
   centered?: boolean;
 }) {
+  // Get the correct max-width class
+  const maxWidthClass = maxWidth === 'none' ? '' : `max-w-${maxWidth}`;
+
   return (
     <div 
       className={`
         ${centered ? 'mx-auto' : ''}
-        ${`max-w-${maxWidth}`}
+        ${maxWidthClass}
         ${className}
       `}
     >
