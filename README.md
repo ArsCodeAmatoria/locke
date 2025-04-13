@@ -72,10 +72,10 @@ npm run dev
 
 ## Development Roadmap
 
-- **Phase 1**: Wallet login + mock DID display ✅
-- **Phase 2**: ZK proof generator (WASM) + verify flow ✅
-- **Phase 3**: Substrate backend live integration (in progress)
-- **Phase 4**: On-chain login session/token (planned)
+- **Phase 1**: Wallet login + mock DID display - Completed
+- **Phase 2**: ZK proof generator (WASM) + verify flow - Completed
+- **Phase 3**: Substrate backend live integration - In progress
+- **Phase 4**: On-chain login session/token - Planned
 
 ## License
 
