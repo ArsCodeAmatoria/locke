@@ -12,23 +12,23 @@
     "dev:real": "NEXT_PUBLIC_USE_REAL_NODE=true next dev"
   },
   "dependencies": {
-    "@polkadot/api": "^10.9.1",
-    "@polkadot/extension-dapp": "^0.46.5",
-    "@radix-ui/react-slot": "^1.0.2",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.0.0",
-    "framer-motion": "^10.16.4",
-    "lucide-react": "^0.274.0",
+    "@polkadot/api": "10.9.1",
+    "@polkadot/extension-dapp": "0.46.5",
+    "@radix-ui/react-slot": "1.0.2",
+    "class-variance-authority": "0.7.0",
+    "clsx": "2.0.0",
+    "framer-motion": "10.16.4",
+    "lucide-react": "0.274.0",
     "next": "13.5.4",
-    "next-themes": "^0.2.1",
+    "next-themes": "0.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "sonner": "^1.0.3",
-    "tailwind-merge": "^1.14.0",
-    "tw-animate-css": "^1.2.5"
+    "sonner": "1.0.3",
+    "tailwind-merge": "1.14.0",
+    "tw-animate-css": "1.2.5"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^2.1.2",
+    "@eslint/eslintrc": "2.1.2",
     "@types/node": "20.8.2",
     "@types/react": "18.2.24",
     "@types/react-dom": "18.2.8",
@@ -38,5 +38,8 @@
     "postcss": "8.4.31",
     "tailwindcss": "3.3.3",
     "typescript": "5.2.2"
+  },
+  "engines": {
+    "node": ">=18.17.0"
   }
 }
