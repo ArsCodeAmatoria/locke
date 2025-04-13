@@ -4,6 +4,19 @@ import { createMultiChainDID, parseMultiChainDID } from './did-resolver';
 import { getChainKey, getChainMetadata } from './chain-registry';
 
 /**
+ * Type definition for the Ethereum provider on window
+ */
+declare global {
+  interface Window {
+    ethereum?: {
+      request: (args: {method: string, params?: any[]}) => Promise<any>;
+      on: (event: string, callback: (...args: any[]) => void) => void;
+      isMetaMask?: boolean;
+    }
+  }
+}
+
+/**
  * Ethereum DID registry contract ABI
  * This is a simplified version for demonstration - would use real contract in production
  */
@@ -31,7 +44,7 @@ export class EthereumClient implements ChainClient {
   private chainId: string = '';
   private didRegistry: ethers.Contract | null = null;
   private signer: ethers.Signer | null = null;
-  private isConnected: boolean = false;
+  private _connected: boolean = false;
 
   /**
    * Get the chain type (always ETHEREUM for this client)
@@ -90,11 +103,11 @@ export class EthereumClient implements ChainClient {
         this.signer || this.provider
       );
       
-      this.isConnected = true;
+      this._connected = true;
       return true;
     } catch (error) {
       console.error('Failed to connect to Ethereum:', error);
-      this.isConnected = false;
+      this._connected = false;
       return false;
     }
   }
@@ -106,21 +119,21 @@ export class EthereumClient implements ChainClient {
     this.provider = null;
     this.signer = null;
     this.didRegistry = null;
-    this.isConnected = false;
+    this._connected = false;
   }
 
   /**
    * Check if connected to Ethereum provider
    */
-  isNodeConnected(): boolean {
-    return this.isConnected;
+  isConnected(): boolean {
+    return this._connected;
   }
 
   /**
    * Resolve a DID to a cross-chain identity
    */
   async resolveDid(did: string): Promise<CrossChainIdentity | null> {
-    if (!this.isConnected || !this.didRegistry) {
+    if (!this._connected || !this.didRegistry) {
       throw new Error('Not connected to Ethereum');
     }
 
@@ -198,7 +211,7 @@ export class EthereumClient implements ChainClient {
    * Verify a credential issued on Ethereum
    */
   async verifyCredential(credential: ChainCredential): Promise<boolean> {
-    if (!this.isConnected) {
+    if (!this._connected) {
       throw new Error('Not connected to Ethereum');
     }
     
@@ -239,7 +252,7 @@ export class EthereumClient implements ChainClient {
    * Get all accounts linked to a DID
    */
   async getLinkedAccounts(did: string): Promise<string[]> {
-    if (!this.isConnected) {
+    if (!this._connected) {
       throw new Error('Not connected to Ethereum');
     }
     
@@ -266,7 +279,7 @@ export class EthereumClient implements ChainClient {
    * Create a new DID on Ethereum
    */
   async createDid(account: any): Promise<string | null> {
-    if (!this.isConnected || !this.signer) {
+    if (!this._connected || !this.signer) {
       throw new Error('Not connected to Ethereum or no signer available');
     }
     
