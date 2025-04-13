@@ -19,7 +19,7 @@ import { getChainKey } from './chain-registry';
 /**
  * Factory function to create chain-specific clients
  */
-function createChainClient(chainType: ChainType): ChainClient | null {
+function createChainClient(chainType: ChainType): ChainClient {
   // In a real implementation, we would import and instantiate the actual clients
   // For now, we'll just create mock clients
   return {
@@ -70,10 +70,6 @@ export class CrossChainIdentityManager {
       // Create new client if needed
       if (!client) {
         client = createChainClient(chainType);
-        if (!client) {
-          console.error(`No client implementation available for chain type: ${chainType}`);
-          return false;
-        }
         this.clients.set(chainType, client);
       }
       
