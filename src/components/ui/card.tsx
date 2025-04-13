@@ -16,6 +16,8 @@ interface CardProps {
   delay?: number;
   title?: string;
   titleGlow?: boolean;
+  borderGlow?: boolean;
+  hoverable?: boolean;
 }
 
 export function Card({
@@ -29,11 +31,19 @@ export function Card({
   delay = 0,
   title,
   titleGlow = true,
+  borderGlow = true,
+  hoverable = false,
 }: CardProps) {
+  const cardClass = `cyber-card p-6 ${borderGlow ? 'shadow-[0_0_15px_rgba(22,255,177,0.15)]' : ''} 
+    ${hoverable ? 'transition-all duration-300 hover:transform hover:scale-[1.02] hover:shadow-[0_0_25px_rgba(22,255,177,0.25)]' : ''} 
+    ${className}`;
+  
   const content = (
-    <div className={`cyber-card p-6 ${className}`}>
+    <div className={cardClass}>
       {title && (
-        <h3 className={`text-xl mb-4 ${titleGlow ? 'cyber-glow' : ''}`}>{title}</h3>
+        <h3 className={`text-xl font-bold mb-4 ${titleGlow ? 'cyber-glow' : ''}`}>
+          {titleGlow ? title : <span className="text-white/90">{title}</span>}
+        </h3>
       )}
       {children}
     </div>
@@ -68,6 +78,7 @@ export function Card({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay }}
+        whileHover={hoverable ? { y: -5 } : {}}
       >
         {wrappedContent}
       </motion.div>
@@ -75,6 +86,77 @@ export function Card({
   }
 
   return wrappedContent;
+}
+
+// New Card Components for WalletLogin
+export function CardHeader({
+  children,
+  className = '',
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`px-6 py-4 ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+export function CardTitle({
+  children,
+  className = '',
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <h3 className={`text-xl font-bold ${className}`}>
+      {children}
+    </h3>
+  );
+}
+
+export function CardDescription({
+  children,
+  className = '',
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <p className={`text-sm text-slate-400 mt-1 ${className}`}>
+      {children}
+    </p>
+  );
+}
+
+export function CardContent({
+  children,
+  className = '',
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`px-6 py-4 ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+export function CardFooter({
+  children,
+  className = '',
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`px-6 py-4 ${className}`}>
+      {children}
+    </div>
+  );
 }
 
 // Helper components for layout
@@ -93,30 +175,23 @@ export function CardGrid({
     xl?: number;
   };
 }) {
-  // Build the responsive grid classes
-  const gridClasses = [];
-  
-  if (columns.default) {
-    gridClasses.push(`grid-cols-${columns.default}`);
-  }
+  let gridColsClass = `grid-cols-${columns.default}`;
   
   if (columns.sm) {
-    gridClasses.push(`sm:grid-cols-${columns.sm}`);
+    gridColsClass += ` sm:grid-cols-${columns.sm}`;
   }
   
   if (columns.md) {
-    gridClasses.push(`md:grid-cols-${columns.md}`);
+    gridColsClass += ` md:grid-cols-${columns.md}`;
   }
   
   if (columns.lg) {
-    gridClasses.push(`lg:grid-cols-${columns.lg}`);
+    gridColsClass += ` lg:grid-cols-${columns.lg}`;
   }
   
   if (columns.xl) {
-    gridClasses.push(`xl:grid-cols-${columns.xl}`);
+    gridColsClass += ` xl:grid-cols-${columns.xl}`;
   }
-  
-  const gridColsClass = gridClasses.join(' ');
 
   return (
     <div className={`grid ${gridColsClass} gap-6 ${className}`}>
@@ -158,7 +233,7 @@ export function SectionDivider({
     <div className={`hacker-divider my-8 ${className}`}>
       {label && (
         <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-          bg-background px-2 text-sm text-primary-foreground">
+          bg-[#0e1015] px-3 py-1 rounded text-sm text-[#16ffb1] font-mono">
           {label}
         </span>
       )}

@@ -26,7 +26,7 @@ export default function LayoutWrapper({
   const content = (
     <main 
       className={`
-        ${withPadding ? 'px-4 py-8 sm:px-6 sm:py-10 md:py-12' : ''}
+        ${withPadding ? 'px-4 sm:px-6 md:px-8' : ''}
         ${centered ? 'mx-auto' : ''}
         ${maxWidthClass}
         ${className}

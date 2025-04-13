@@ -5,31 +5,64 @@ import { Wallet, Shield, Lock, FileBadge, ArrowRight, Terminal, Code, CircleSlas
 import LayoutWrapper, { Section, Container } from '@/components/layout-wrapper';
 import { Card, CardGrid, SectionDivider } from '@/components/ui/card';
 import { CyberGlitch } from '@/components/ui/motion-component';
-import { TerminalType } from '@/components/ui/advanced-motion';
+import { TerminalType, GlitchReveal } from '@/components/ui/advanced-motion';
 
 export default function Home() {
   return (
     <LayoutWrapper>
-      <Section className="text-center py-12">
-        <h1 className="text-5xl font-bold mb-4 cyber-glow terminal-text">
-          <CyberGlitch data-text="zkID Login">zkID Login</CyberGlitch>
-        </h1>
-        <p className="text-xl text-emerald-400 max-w-2xl mx-auto font-mono">
-          Decentralized identity verification powered by zero-knowledge cryptography
-        </p>
-        <div className="mt-6 flex justify-center">
-          <div className="inline-block bg-black/30 p-3 rounded-lg border border-emerald-400/30">
-            <code className="text-sm text-emerald-400 font-mono">$ decrypt --identity --zero-knowledge --secure</code>
+      {/* Hero Section */}
+      <Section className="min-h-[85vh] relative flex items-center justify-center py-12 overflow-hidden">
+        <div className="absolute inset-0 bg-black/30 z-0"></div>
+        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-repeat opacity-20 z-0"></div>
+        <Container className="relative z-10 max-w-4xl">
+          <div className="text-center mb-10">
+            <h1 className="text-6xl font-bold mb-6 cyber-glow terminal-text">
+              <CyberGlitch data-text="zkID Login">zkID Login</CyberGlitch>
+            </h1>
+            <div className="text-xl text-emerald-400 max-w-2xl mx-auto font-mono mb-8">
+              <GlitchReveal>Decentralized identity verification powered by zero-knowledge cryptography</GlitchReveal>
+            </div>
+            <div className="inline-block bg-black/60 p-4 rounded-lg border border-emerald-400/40 shadow-[0_0_15px_rgba(22,255,177,0.3)]">
+              <code className="text-sm text-emerald-400 font-mono">$ decrypt --identity --zero-knowledge --secure</code>
+            </div>
           </div>
+          
+          <div className="mt-10">
+            <Link href="/login" className="block w-full max-w-md mx-auto">
+              <button className="cyber-button w-full flex items-center justify-center py-3">
+                Access Secure Terminal
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </button>
+            </Link>
+          </div>
+        </Container>
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 16L6 10H18L12 16Z" fill="#16ffb1"/>
+          </svg>
         </div>
       </Section>
       
       <SectionDivider />
       
-      <Section>
-        <Container>
+      {/* Features Section */}
+      <Section className="py-16 bg-black/30">
+        <Container className="max-w-5xl">
+          <h2 className="text-2xl font-mono mb-8 text-center">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-purple-500 cyber-glow">
+              CORE SECURITY PROTOCOLS
+            </span>
+          </h2>
+          
           <CardGrid columns={{ default: 1, md: 2, lg: 3 }}>
-            <Card title="Polkadot Wallet Auth" titleGlow scanlineEffect animated delay={0.1}>
+            <Card 
+              title="Polkadot Wallet Auth" 
+              titleGlow 
+              scanlineEffect 
+              animated 
+              delay={0.1}
+              hoverable
+            >
               <div className="mb-4 flex items-center gap-2">
                 <Wallet className="h-5 w-5 text-emerald-400" />
                 <span className="text-slate-400">Secure blockchain-backed authentication</span>
@@ -42,7 +75,14 @@ export default function Home() {
               </div>
             </Card>
             
-            <Card title="Decentralized Identity" titleGlow scanlineEffect animated delay={0.2}>
+            <Card 
+              title="Decentralized Identity" 
+              titleGlow 
+              scanlineEffect 
+              animated 
+              delay={0.2}
+              hoverable
+            >
               <div className="mb-4 flex items-center gap-2">
                 <Shield className="h-5 w-5 text-purple-400" />
                 <span className="text-slate-400">Self-sovereign identity on Substrate</span>
@@ -55,7 +95,14 @@ export default function Home() {
               </div>
             </Card>
             
-            <Card title="Soul-Bound Tokens" titleGlow scanlineEffect animated delay={0.3}>
+            <Card 
+              title="Soul-Bound Tokens" 
+              titleGlow 
+              scanlineEffect 
+              animated 
+              delay={0.3}
+              hoverable
+            >
               <div className="mb-4 flex items-center gap-2">
                 <FileBadge className="h-5 w-5 text-blue-400" />
                 <span className="text-slate-400">Non-transferable cryptographic credentials</span>
@@ -68,8 +115,21 @@ export default function Home() {
               </div>
             </Card>
           </CardGrid>
-          
-          <Card title="Zero-Knowledge Proofs" titleGlow scanlineEffect className="mt-8" animated delay={0.4}>
+        </Container>
+      </Section>
+      
+      {/* ZK Proofs Section */}
+      <Section className="py-16">
+        <Container className="max-w-4xl">
+          <Card 
+            title="Zero-Knowledge Proofs" 
+            titleGlow 
+            scanlineEffect 
+            className="mb-8" 
+            animated 
+            delay={0.4}
+            borderGlow
+          >
             <div className="mb-4 flex items-center gap-2">
               <Lock className="h-5 w-5 text-emerald-400" />
               <span className="text-slate-400">Cryptographic proof without data exposure</span>
@@ -78,7 +138,7 @@ export default function Home() {
               Our system uses zero-knowledge proofs to verify your credentials without revealing any personal data. This means you can prove you own a credential (like KYC verification) without sharing any of the underlying personal information.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-black/30 p-3 rounded-lg border border-emerald-400/20">
+              <div className="bg-black/30 p-3 rounded-lg border border-emerald-400/20 hover:border-emerald-400/40 transition-colors">
                 <div className="flex items-center mb-2">
                   <CircleSlash className="h-4 w-4 text-emerald-400 mr-2" />
                   <h3 className="font-mono text-emerald-400">Privacy-First</h3>
@@ -87,7 +147,7 @@ export default function Home() {
                   Prove credential ownership without revealing personal data
                 </p>
               </div>
-              <div className="bg-black/30 p-3 rounded-lg border border-emerald-400/20">
+              <div className="bg-black/30 p-3 rounded-lg border border-emerald-400/20 hover:border-emerald-400/40 transition-colors">
                 <div className="flex items-center mb-2">
                   <Terminal className="h-4 w-4 text-emerald-400 mr-2" />
                   <h3 className="font-mono text-emerald-400">WASM-Powered</h3>
@@ -96,7 +156,7 @@ export default function Home() {
                   Fast, browser-based ZK proof generation using WebAssembly
                 </p>
               </div>
-              <div className="bg-black/30 p-3 rounded-lg border border-emerald-400/20">
+              <div className="bg-black/30 p-3 rounded-lg border border-emerald-400/20 hover:border-emerald-400/40 transition-colors">
                 <div className="flex items-center mb-2">
                   <Database className="h-4 w-4 text-emerald-400 mr-2" />
                   <h3 className="font-mono text-emerald-400">On-Chain Verification</h3>
@@ -117,66 +177,63 @@ export default function Home() {
               <br />
               {'}'}) <span className="text-emerald-400 animate-pulse">|</span>
             </div>
-            <Link href="/login" className="block w-full">
-              <button className="cyber-button w-full flex items-center justify-center">
-                Access Secure Terminal
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </button>
-            </Link>
           </Card>
         </Container>
       </Section>
       
-      <SectionDivider />
-      
-      <Section className="text-center">
-        <Container maxWidth="xl">
-          <h2 className="text-2xl font-mono mb-6">
+      {/* Protocol Steps Section */}
+      <Section className="py-16 bg-black/30">
+        <Container className="max-w-4xl">
+          <h2 className="text-2xl font-mono mb-6 text-center">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-purple-500 cyber-glow">
               SYSTEM PROTOCOLS
             </span>
           </h2>
-          <ol className="text-left space-y-4 mb-8">
-            <li className="flex gap-3 bg-black/30 p-3 rounded-lg border border-emerald-400/20">
-              <div className="bg-emerald-900/40 text-emerald-400 rounded-full h-6 w-6 flex items-center justify-center shrink-0 border border-emerald-400/30">1</div>
-              <div>
-                <p className="text-slate-200 font-mono">CONNECT_WALLET()</p>
-                <p className="text-xs text-slate-400">Authenticate your blockchain address via Polkadot.js extension</p>
-              </div>
-            </li>
-            <li className="flex gap-3 bg-black/30 p-3 rounded-lg border border-emerald-400/20">
-              <div className="bg-emerald-900/40 text-emerald-400 rounded-full h-6 w-6 flex items-center justify-center shrink-0 border border-emerald-400/30">2</div>
-              <div>
-                <p className="text-slate-200 font-mono">RETRIEVE_DID_SBT()</p>
-                <p className="text-xs text-slate-400">System retrieves your DID and Soul-Bound Tokens from Substrate</p>
-              </div>
-            </li>
-            <li className="flex gap-3 bg-black/30 p-3 rounded-lg border border-emerald-400/20">
-              <div className="bg-emerald-900/40 text-emerald-400 rounded-full h-6 w-6 flex items-center justify-center shrink-0 border border-emerald-400/30">3</div>
-              <div>
-                <p className="text-slate-200 font-mono">GENERATE_ZK_PROOF()</p>
-                <p className="text-xs text-slate-400">Create cryptographic proof to verify credentials without data exposure</p>
-              </div>
-            </li>
-            <li className="flex gap-3 bg-black/30 p-3 rounded-lg border border-emerald-400/20">
-              <div className="bg-emerald-900/40 text-emerald-400 rounded-full h-6 w-6 flex items-center justify-center shrink-0 border border-emerald-400/30">4</div>
-              <div>
-                <p className="text-slate-200 font-mono">VERIFY_ON_CHAIN()</p>
-                <p className="text-xs text-slate-400">Proof verification grants access to credential-gated services</p>
-              </div>
-            </li>
-          </ol>
-          
-          <Link href="/login">
-            <button className="cyber-button px-8 py-3">
-              <KeyRound className="inline-block mr-2 h-4 w-4" />
-              INITIALIZE SECURE LOGIN
-            </button>
-          </Link>
+          <div className="bg-black/40 p-6 rounded-xl border border-emerald-400/30 shadow-[0_0_15px_rgba(22,255,177,0.2)]">
+            <ol className="text-left space-y-4 mb-8">
+              <li className="flex gap-3 bg-black/30 p-3 rounded-lg border border-emerald-400/20">
+                <div className="bg-emerald-900/40 text-emerald-400 rounded-full h-6 w-6 flex items-center justify-center shrink-0 border border-emerald-400/30">1</div>
+                <div>
+                  <p className="text-slate-200 font-mono">CONNECT_WALLET()</p>
+                  <p className="text-xs text-slate-400">Authenticate your blockchain address via Polkadot.js extension</p>
+                </div>
+              </li>
+              <li className="flex gap-3 bg-black/30 p-3 rounded-lg border border-emerald-400/20">
+                <div className="bg-emerald-900/40 text-emerald-400 rounded-full h-6 w-6 flex items-center justify-center shrink-0 border border-emerald-400/30">2</div>
+                <div>
+                  <p className="text-slate-200 font-mono">RETRIEVE_DID_SBT()</p>
+                  <p className="text-xs text-slate-400">System retrieves your DID and Soul-Bound Tokens from Substrate</p>
+                </div>
+              </li>
+              <li className="flex gap-3 bg-black/30 p-3 rounded-lg border border-emerald-400/20">
+                <div className="bg-emerald-900/40 text-emerald-400 rounded-full h-6 w-6 flex items-center justify-center shrink-0 border border-emerald-400/30">3</div>
+                <div>
+                  <p className="text-slate-200 font-mono">GENERATE_ZK_PROOF()</p>
+                  <p className="text-xs text-slate-400">Create cryptographic proof to verify credentials without data exposure</p>
+                </div>
+              </li>
+              <li className="flex gap-3 bg-black/30 p-3 rounded-lg border border-emerald-400/20">
+                <div className="bg-emerald-900/40 text-emerald-400 rounded-full h-6 w-6 flex items-center justify-center shrink-0 border border-emerald-400/30">4</div>
+                <div>
+                  <p className="text-slate-200 font-mono">VERIFY_ON_CHAIN()</p>
+                  <p className="text-xs text-slate-400">Proof verification grants access to credential-gated services</p>
+                </div>
+              </li>
+            </ol>
+            
+            <div className="flex justify-center">
+              <Link href="/login">
+                <button className="cyber-button px-8 py-3 shadow-[0_0_25px_rgba(22,255,177,0.3)]">
+                  <KeyRound className="inline-block mr-2 h-4 w-4" />
+                  INITIALIZE SECURE LOGIN
+                </button>
+              </Link>
+            </div>
+          </div>
         </Container>
       </Section>
       
-      <div className="border-t border-emerald-400/20 pt-6 mt-12 text-center">
+      <div className="border-t border-emerald-400/20 pt-6 mt-6 mb-6 text-center">
         <p className="text-xs text-slate-500 font-mono">
           [SYSTEM: SECURE // ENCRYPTED // DECENTRALIZED]
         </p>
