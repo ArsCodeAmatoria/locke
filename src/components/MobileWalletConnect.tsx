@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
-import { Smartphone, QrCode, Scan, Loader2, CircleAlert, CheckCircle } from 'lucide-react';
+import { Smartphone, QrCode, Scan, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { toast } from 'sonner';
@@ -188,7 +188,7 @@ export function MobileWalletConnect({ onAccountSelect, onDismiss }: MobileWallet
               onClick={onDismiss}
               className="h-8 w-8 rounded-full bg-black/20 flex items-center justify-center hover:bg-black/40"
             >
-              <CircleAlert className="h-5 w-5 text-slate-400" />
+              <AlertCircle className="h-5 w-5 text-slate-400" />
             </button>
           </div>
           <CardDescription className="text-slate-400">
