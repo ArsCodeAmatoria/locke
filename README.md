@@ -2,6 +2,13 @@
 
 A decentralized identity verification system built on Polkadot and Substrate with Zero-Knowledge Proofs for privacy-preserving authentication.
 
+## Developed By
+
+[Ars Code Amatoria](https://www.arscode.org/) - Specialized in blockchain security and Rust development, with a focus on Polkadot/Substrate and cryptographic systems.
+
+- **GitHub**: [github.com/ArsCodeAmatoria](https://github.com/ArsCodeAmatoria)
+- **Website**: [arscode.org](https://www.arscode.org/)
+
 ## Features
 
 - **Polkadot Wallet Authentication**: Connect using Polkadot.js browser extension
@@ -53,8 +60,8 @@ A decentralized identity verification system built on Polkadot and Substrate wit
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/zkid-login.git
-cd zkid-login
+git clone https://github.com/ArsCodeAmatoria/locke.git
+cd locke
 ```
 
 2. Install dependencies:
@@ -381,11 +388,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Acknowledgements
+## Credits
 
-- [Polkadot](https://polkadot.network/) for the blockchain infrastructure
-- [Substrate](https://substrate.io/) for the modular blockchain framework
-- [Next.js](https://nextjs.org/) for the React framework
-- [shadcn/ui](https://ui.shadcn.com/) for the UI components
-- [bellman](https://github.com/zkcrypto/bellman) for the ZK proof library
-- [WalletConnect](https://walletconnect.com/) for the mobile wallet connection protocol
+Developed by [Ars Code Amatoria](https://github.com/ArsCodeAmatoria).
