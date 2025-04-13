@@ -9,7 +9,7 @@ import { SubstrateClient, UserIdentity } from '@/lib/substrate-client';
 import { ZkProver } from '@/lib/wasm-zkp';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
-import { Terminal, Shield, CircuitBoard } from 'lucide-react';
+import { Terminal, Shield, CircuitBoard, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -17,6 +17,8 @@ export default function LoginPage() {
   const [userIdentity, setUserIdentity] = useState<UserIdentity | null>(null);
   const [isGeneratingProof, setIsGeneratingProof] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState<'unverified' | 'generating' | 'verified' | 'failed'>('unverified');
+  const [isCreatingDid, setIsCreatingDid] = useState(false);
+  const [nodeConnectionStatus, setNodeConnectionStatus] = useState<'connecting' | 'connected' | 'failed'>('connecting');
   
   // Initialize Substrate client and ZK prover
   useEffect(() => {
@@ -25,8 +27,14 @@ export default function LoginPage() {
     
     // Initialize the clients
     const init = async () => {
-      await substratClient.connect();
-      await zkProver.init();
+      try {
+        const connected = await substratClient.connect();
+        setNodeConnectionStatus(connected ? 'connected' : 'failed');
+        await zkProver.init();
+      } catch (error) {
+        console.error('Error initializing clients:', error);
+        setNodeConnectionStatus('failed');
+      }
     };
     
     init();
@@ -72,11 +80,50 @@ export default function LoginPage() {
           verificationStatus: 'unverified'
         }));
       } else {
-        toast.error('Failed to fetch identity information');
+        // No DID exists for this account
+        toast.info('No DID found for this account. You need to create one.');
+        setSelectedAccount(account);
       }
     } catch (error) {
       console.error('Error fetching identity:', error);
       toast.error('Error fetching identity information');
+    }
+  };
+  
+  const handleCreateDid = async () => {
+    if (!selectedAccount) return;
+    
+    setIsCreatingDid(true);
+    toast.loading('Creating your decentralized identity...');
+    
+    try {
+      const substratClient = SubstrateClient.getInstance();
+      const didId = await substratClient.createDid(selectedAccount);
+      
+      if (didId) {
+        toast.success('DID created successfully!');
+        
+        // Fetch the newly created identity
+        const identity = await substratClient.getUserIdentity(selectedAccount);
+        
+        if (identity) {
+          setUserIdentity(identity);
+          
+          // Save session to localStorage
+          localStorage.setItem('zkid-session', JSON.stringify({
+            account: selectedAccount,
+            identity,
+            verificationStatus: 'unverified'
+          }));
+        }
+      } else {
+        toast.error('Failed to create DID');
+      }
+    } catch (error) {
+      console.error('Error creating DID:', error);
+      toast.error('Error creating DID');
+    } finally {
+      setIsCreatingDid(false);
     }
   };
   
@@ -128,7 +175,12 @@ export default function LoginPage() {
               <span className="terminal-text">Return to Main Terminal</span>
             </Link>
             <div className="px-2 py-1 bg-black/30 border border-emerald-400/30 rounded-md">
-              <span className="text-xs text-slate-500 font-mono">NODE STATUS: <span className="text-emerald-400">ONLINE</span></span>
+              <span className="text-xs text-slate-500 font-mono">
+                NODE STATUS: {' '}
+                {nodeConnectionStatus === 'connected' && <span className="text-emerald-400">ONLINE</span>}
+                {nodeConnectionStatus === 'connecting' && <span className="text-yellow-400">CONNECTING...</span>}
+                {nodeConnectionStatus === 'failed' && <span className="text-red-400">OFFLINE (USING MOCK DATA)</span>}
+              </span>
             </div>
           </div>
           
@@ -167,6 +219,42 @@ export default function LoginPage() {
                 </p>
               </div>
               <WalletLogin onAccountSelect={handleAccountSelect} />
+            </div>
+          )}
+          
+          {selectedAccount && !userIdentity && (
+            <div className="w-full max-w-md">
+              <div className="mb-4 p-2 bg-black/30 border border-emerald-400/20 rounded">
+                <p className="text-sm text-slate-300 font-mono flex items-center">
+                  <AlertCircle className="h-4 w-4 text-yellow-400 mr-2" />
+                  <span>NO IDENTITY FOUND</span>
+                </p>
+                <p className="text-xs text-slate-500 font-mono mt-2">
+                  You need to create a decentralized identity (DID) to use this application.
+                </p>
+              </div>
+              
+              <button
+                onClick={handleCreateDid}
+                disabled={isCreatingDid}
+                className="w-full px-4 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-md text-white font-semibold transition-all duration-200 ease-in-out disabled:opacity-50 flex justify-center items-center terminal-text"
+              >
+                {isCreatingDid ? (
+                  <>
+                    <div className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin mr-2"></div>
+                    CREATING IDENTITY...
+                  </>
+                ) : (
+                  'CREATE DECENTRALIZED IDENTITY'
+                )}
+              </button>
+              
+              <button
+                onClick={handleLogout}
+                className="w-full mt-2 px-4 py-2 border border-slate-600 rounded-md text-slate-300 hover:text-white transition-colors duration-200 terminal-text text-sm"
+              >
+                DISCONNECT WALLET
+              </button>
             </div>
           )}
           
@@ -210,7 +298,7 @@ export default function LoginPage() {
           <div className="flex justify-between items-center text-xs text-slate-600 font-mono">
             <span>SYSTEM v0.1.3</span>
             <span>ENCRYPTION: ACTIVE</span>
-            <span>BLOCKCHAIN: CONNECTED</span>
+            <span>BLOCKCHAIN: {nodeConnectionStatus === 'connected' ? 'CONNECTED' : 'SIMULATED'}</span>
           </div>
         </footer>
       </div>

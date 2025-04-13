@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "node:start": "./start-node.sh",
+    "dev:mock": "NEXT_PUBLIC_USE_REAL_NODE=false next dev",
+    "dev:real": "NEXT_PUBLIC_USE_REAL_NODE=true next dev"
   },
   "dependencies": {
     "@polkadot/api": "^15.9.1",
