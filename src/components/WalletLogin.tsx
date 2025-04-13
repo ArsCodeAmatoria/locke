@@ -3,7 +3,7 @@ import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Wallet, CircleX, Loader2, ShieldAlert, ShieldCheck, KeyRound, Smartphone } from 'lucide-react';
+import { Wallet, X, Loader2, ShieldAlert, ShieldCheck, KeyRound, Smartphone } from 'lucide-react';
 import { toast } from 'sonner';
 import { MobileWalletConnect } from './MobileWalletConnect';
 
@@ -182,7 +182,7 @@ export function WalletLogin({ onAccountSelect }: WalletLoginProps) {
                   setError(null);
                 }}
               >
-                <CircleX className="h-3 w-3 mr-1" />
+                <X className="h-3 w-3 mr-1" />
                 Clear connected accounts
               </button>
             </div>
