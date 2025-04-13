@@ -5,7 +5,8 @@ import Image from 'next/image';
 import { 
   Wallet, Shield, Lock, FileBadge, ArrowRight, Terminal, 
   Code, CircleSlash, Eye, KeyRound, Database, BookOpen, 
-  Globe, Share2, LucideUserCheck, Bitcoin, Network
+  Globe, Share2, LucideUserCheck, Bitcoin, Network,
+  Github, ExternalLink
 } from 'lucide-react';
 import LayoutWrapper, { Section, Container } from '@/components/layout-wrapper';
 import { Card, CardGrid, SectionDivider } from '@/components/ui/card';
@@ -250,156 +251,181 @@ export default function Home() {
                 <span className="text-slate-400">Cyberpunk-inspired interface</span>
               </div>
               <p className="text-sm text-slate-300 mb-4">
-                Experience our retro-futuristic terminal UI with command-line style interactions, cyberpunk aesthetics, and real-time feedback.
+                Our terminal-like interface provides a unique cyberpunk experience with a focus on functionality and security.
               </p>
               <div className="p-2 bg-black/40 rounded border border-emerald-400/20 font-mono text-xs text-slate-300">
-                <span className="text-green-400">{`>`}</span> ui.renderTerminal() <span className="text-green-400 animate-pulse">|</span>
+                <TerminalType>{">"} initializing secure interface...</TerminalType>
               </div>
             </Card>
             
             <Card 
-              title="Cross-Chain Linking" 
+              title="Zero-Knowledge Proofs" 
               titleGlow 
               scanlineEffect 
               animated 
-              delay={0.3}
+              delay={0.4}
               hoverable
             >
               <div className="mb-4 flex items-center gap-2">
-                <Share2 className="h-5 w-5 text-orange-400" />
-                <span className="text-slate-400">Connect identities across chains</span>
+                <CircleSlash className="h-5 w-5 text-pink-400" />
+                <span className="text-slate-400">Privacy-preserving verification</span>
               </div>
               <p className="text-sm text-slate-300 mb-4">
-                Link your identities from multiple blockchains into a unified profile, allowing seamless credential verification across different ecosystems.
+                Zero-knowledge proofs allow you to verify information without revealing sensitive data, maintaining privacy while establishing trust.
               </p>
               <div className="p-2 bg-black/40 rounded border border-emerald-400/20 font-mono text-xs text-slate-300">
-                <span className="text-orange-400">{`>`}</span> identity.link(chains) <span className="text-orange-400 animate-pulse">|</span>
+                <span className="text-pink-400">{`>`}</span> zk.proveCredential(data) <span className="text-pink-400 animate-pulse">|</span>
               </div>
             </Card>
           </CardGrid>
         </Container>
       </Section>
       
-      {/* ZK Proofs Section */}
-      <Section className="py-16">
-        <Container className="max-w-4xl">
-          <Card 
-            title="Zero-Knowledge Proofs" 
-            titleGlow 
-            scanlineEffect 
-            className="mb-8" 
-            animated 
-            delay={0.4}
-            borderGlow
-          >
-            <div className="mb-4 flex items-center gap-2">
-              <Lock className="h-5 w-5 text-emerald-400" />
-              <span className="text-slate-400">Cryptographic proof without data exposure</span>
-            </div>
-            <p className="text-sm text-slate-300 mb-4">
-              Our system uses zero-knowledge proofs to verify your credentials without revealing any personal data. This means you can prove you own a credential (like KYC verification) without sharing any of the underlying personal information.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-black/30 p-3 rounded-lg border border-emerald-400/20 hover:border-emerald-400/40 transition-colors">
-                <div className="flex items-center mb-2">
-                  <CircleSlash className="h-4 w-4 text-emerald-400 mr-2" />
-                  <h3 className="font-mono text-emerald-400">Privacy-First</h3>
-                </div>
-                <p className="text-xs text-slate-300">
-                  Prove credential ownership without revealing personal data
-                </p>
-              </div>
-              <div className="bg-black/30 p-3 rounded-lg border border-emerald-400/20 hover:border-emerald-400/40 transition-colors">
-                <div className="flex items-center mb-2">
-                  <Terminal className="h-4 w-4 text-emerald-400 mr-2" />
-                  <h3 className="font-mono text-emerald-400">WASM-Powered</h3>
-                </div>
-                <p className="text-xs text-slate-300">
-                  Fast, browser-based ZK proof generation using WebAssembly
-                </p>
-              </div>
-              <div className="bg-black/30 p-3 rounded-lg border border-emerald-400/20 hover:border-emerald-400/40 transition-colors">
-                <div className="flex items-center mb-2">
-                  <Database className="h-4 w-4 text-emerald-400 mr-2" />
-                  <h3 className="font-mono text-emerald-400">On-Chain Verification</h3>
-                </div>
-                <p className="text-xs text-slate-300">
-                  Proofs verified on Substrate blockchain for maximum security
-                </p>
-              </div>
-            </div>
-            <div className="p-3 bg-black/40 rounded-lg border border-emerald-400/20 font-mono text-xs text-slate-300 overflow-auto mb-6">
-              <span className="text-emerald-400">{`>`}</span> <span className="text-blue-400">zkProof</span>.generate({'{'}
-              <br />
-              &nbsp;&nbsp;credential: <span className="text-purple-400">"did:substrate:0x7f9e8e3"</span>,
-              <br />
-              &nbsp;&nbsp;claim: <span className="text-purple-400">"identity-verification"</span>,
-              <br />
-              &nbsp;&nbsp;revealData: <span className="text-red-400">false</span>
-              <br />
-              {'}'}) <span className="text-emerald-400 animate-pulse">|</span>
-            </div>
-          </Card>
-        </Container>
-      </Section>
-      
-      {/* Protocol Steps Section */}
-      <Section className="py-16 bg-black/30">
-        <Container className="max-w-4xl">
-          <h2 className="text-2xl font-mono mb-6 text-center">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-purple-500 cyber-glow">
-              SYSTEM PROTOCOLS
+      {/* ZK Comparison Section */}
+      <Section className="py-16 bg-black/40">
+        <Container className="max-w-5xl">
+          <h2 className="text-2xl font-mono mb-8 text-center">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-pink-500 cyber-glow">
+              ZERO-KNOWLEDGE TECHNOLOGY
             </span>
           </h2>
-          <div className="bg-black/40 p-6 rounded-xl border border-emerald-400/30 shadow-[0_0_15px_rgba(22,255,177,0.2)]">
-            <ol className="text-left space-y-4 mb-8">
-              <li className="flex gap-3 bg-black/30 p-3 rounded-lg border border-emerald-400/20">
-                <div className="bg-emerald-900/40 text-emerald-400 rounded-full h-6 w-6 flex items-center justify-center shrink-0 border border-emerald-400/30">1</div>
-                <div>
-                  <p className="text-slate-200 font-mono">CONNECT_WALLET_OR_SOCIAL()</p>
-                  <p className="text-xs text-slate-400">Authenticate using blockchain wallet or social account</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card 
+              title="Traditional Verification" 
+              titleGlow 
+              animated 
+              delay={0.2}
+              noiseEffect
+            >
+              <div className="mb-4 flex items-center gap-2">
+                <Eye className="h-5 w-5 text-red-400" />
+                <span className="text-slate-400">Full data exposure</span>
+              </div>
+              
+              <div className="space-y-2 mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                  <span className="text-sm text-slate-300">Shares all personal data</span>
                 </div>
-              </li>
-              <li className="flex gap-3 bg-black/30 p-3 rounded-lg border border-emerald-400/20">
-                <div className="bg-emerald-900/40 text-emerald-400 rounded-full h-6 w-6 flex items-center justify-center shrink-0 border border-emerald-400/30">2</div>
-                <div>
-                  <p className="text-slate-200 font-mono">RETRIEVE_MULTI_CHAIN_DID()</p>
-                  <p className="text-xs text-slate-400">System retrieves your DIDs and Soul-Bound Tokens across chains</p>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                  <span className="text-sm text-slate-300">Third-party data storage</span>
                 </div>
-              </li>
-              <li className="flex gap-3 bg-black/30 p-3 rounded-lg border border-emerald-400/20">
-                <div className="bg-emerald-900/40 text-emerald-400 rounded-full h-6 w-6 flex items-center justify-center shrink-0 border border-emerald-400/30">3</div>
-                <div>
-                  <p className="text-slate-200 font-mono">GENERATE_ZK_PROOF()</p>
-                  <p className="text-xs text-slate-400">Create cryptographic proof to verify credentials without data exposure</p>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                  <span className="text-sm text-slate-300">Single point of failure</span>
                 </div>
-              </li>
-              <li className="flex gap-3 bg-black/30 p-3 rounded-lg border border-emerald-400/20">
-                <div className="bg-emerald-900/40 text-emerald-400 rounded-full h-6 w-6 flex items-center justify-center shrink-0 border border-emerald-400/30">4</div>
-                <div>
-                  <p className="text-slate-200 font-mono">VERIFY_ON_CHAIN()</p>
-                  <p className="text-xs text-slate-400">Proof verification grants access to credential-gated services</p>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                  <span className="text-sm text-slate-300">Data breach risks</span>
                 </div>
-              </li>
-            </ol>
+              </div>
+              
+              <div className="p-3 bg-black/40 rounded-lg border border-red-500/20 font-mono text-xs text-slate-300">
+                <span className="text-red-400">✕</span> Vulnerable to identity theft
+              </div>
+            </Card>
             
-            <div className="flex justify-center">
-              <Link href="/login">
-                <button className="cyber-button px-8 py-3 shadow-[0_0_25px_rgba(22,255,177,0.3)]">
-                  <KeyRound className="inline-block mr-2 h-4 w-4" />
-                  INITIALIZE SECURE LOGIN
-                </button>
-              </Link>
-            </div>
+            <Card 
+              title="Zero-Knowledge Verification" 
+              titleGlow 
+              animated 
+              delay={0.4}
+              glitchEffect
+            >
+              <div className="mb-4 flex items-center gap-2">
+                <KeyRound className="h-5 w-5 text-emerald-400" />
+                <span className="text-slate-400">Selective disclosure</span>
+              </div>
+              
+              <div className="space-y-2 mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                  <span className="text-sm text-slate-300">Verify without revealing data</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                  <span className="text-sm text-slate-300">Self-sovereign control</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                  <span className="text-sm text-slate-300">Cryptographic security</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                  <span className="text-sm text-slate-300">Decentralized verification</span>
+                </div>
+              </div>
+              
+              <div className="p-3 bg-black/40 rounded-lg border border-emerald-500/20 font-mono text-xs text-slate-300">
+                <span className="text-emerald-400">✓</span> Privacy-preserving by design
+              </div>
+            </Card>
+          </div>
+          
+          <div className="mt-10 text-center">
+            <Link href="/multi-chain">
+              <button className="cyber-button-outline flex items-center mx-auto">
+                Explore Multi-Chain Identity
+                <Share2 className="ml-2 h-4 w-4" />
+              </button>
+            </Link>
           </div>
         </Container>
       </Section>
       
-      <div className="border-t border-emerald-400/20 pt-6 mt-6 mb-6 text-center">
-        <p className="text-xs text-slate-500 font-mono">
-          [SYSTEM: SECURE // MULTI-CHAIN // ENCRYPTED // DECENTRALIZED]
-        </p>
-      </div>
+      {/* Credits Section */}
+      <Section className="py-16 bg-black/50">
+        <Container className="max-w-5xl">
+          <Card 
+            title="Project Credits" 
+            titleGlow 
+            scanlineEffect 
+            animated 
+            delay={0.2}
+          >
+            <div className="mb-6">
+              <h3 className="text-emerald-400 font-mono text-sm mb-3">DEVELOPED BY</h3>
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 bg-black/40 rounded-lg border border-emerald-400/20">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-emerald-900/60 flex items-center justify-center text-emerald-400 border border-emerald-400/30">
+                    <Code className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h4 className="text-emerald-400">Ars Code Amatoria</h4>
+                    <p className="text-xs text-slate-400">Blockchain Security & Rust Development</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Link 
+                    href="https://github.com/ArsCodeAmatoria" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs text-slate-300 hover:text-emerald-400 transition-colors px-3 py-1 rounded-full border border-slate-700 hover:border-emerald-400/50"
+                  >
+                    <Github className="h-3 w-3" />
+                    GitHub
+                  </Link>
+                  <Link 
+                    href="https://www.arscode.org/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs text-slate-300 hover:text-emerald-400 transition-colors px-3 py-1 rounded-full border border-slate-700 hover:border-emerald-400/50"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                    Website
+                  </Link>
+                </div>
+              </div>
+            </div>
+            
+            <p className="text-sm text-slate-300 mb-4">
+              This project demonstrates advanced blockchain identity concepts including verifiable credentials, zero-knowledge proofs, and cross-chain identity management. Built with a focus on security, privacy, and user experience.
+            </p>
+          </Card>
+        </Container>
+      </Section>
     </LayoutWrapper>
   );
 }

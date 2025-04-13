@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/lib/hooks/use-auth";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -26,14 +27,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="antialiased min-h-screen">
+      <body className="antialiased min-h-screen flex flex-col">
         <AuthProvider>
           <Header />
-          <div className="pt-16"> {/* Adding padding to account for fixed header */}
+          <div className="pt-16 flex-grow"> {/* Adding padding to account for fixed header */}
             <AnimatePresence mode="wait">
               {children}
             </AnimatePresence>
           </div>
+          <Footer />
           <Toaster />
         </AuthProvider>
       </body>
