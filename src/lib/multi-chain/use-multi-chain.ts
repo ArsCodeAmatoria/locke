@@ -28,7 +28,7 @@ interface MultiChainState {
  */
 export function useMultiChain() {
   const [state, setState] = useState<MultiChainState>({
-    isInitializing: true,
+    isInitializing: false,
     isReady: false,
     activeIdentity: null,
     activeDid: null,
@@ -49,8 +49,28 @@ export function useMultiChain() {
       // Default to all chain types if none specified
       const chainsToInitialize = chains || Object.values(ChainType);
       
-      // Initialize each chain
-      const results = await manager.initializeChains(chainsToInitialize);
+      // Create a promise with timeout to prevent infinite spinning
+      const initializeWithTimeout = async () => {
+        return new Promise<Map<ChainType, boolean>>(async (resolve, reject) => {
+          // Set a 10-second timeout
+          const timeoutId = setTimeout(() => {
+            reject(new Error('Initialization timed out after 10 seconds'));
+          }, 10000);
+          
+          try {
+            // Initialize each chain
+            const results = await manager.initializeChains(chainsToInitialize);
+            clearTimeout(timeoutId);
+            resolve(results);
+          } catch (error) {
+            clearTimeout(timeoutId);
+            reject(error);
+          }
+        });
+      };
+      
+      // Initialize with timeout
+      const results = await initializeWithTimeout();
       
       // Filter to successfully initialized chains
       const initializedChains = Array.from(results.entries())

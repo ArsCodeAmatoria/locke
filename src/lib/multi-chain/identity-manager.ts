@@ -73,8 +73,29 @@ export class CrossChainIdentityManager {
         this.clients.set(chainType, client);
       }
       
-      // Connect to the chain
-      const connected = await client.connect(endpoint);
+      // Connect to the chain with timeout
+      const connectWithTimeout = async (): Promise<boolean> => {
+        return new Promise((resolve) => {
+          // Set a 5-second timeout for connect operation
+          const timeoutId = setTimeout(() => {
+            console.warn(`Connect operation for ${chainType} timed out`);
+            resolve(false);
+          }, 5000);
+          
+          client!.connect(endpoint)
+            .then(connected => {
+              clearTimeout(timeoutId);
+              resolve(connected);
+            })
+            .catch(err => {
+              console.error(`Error connecting to ${chainType}:`, err);
+              clearTimeout(timeoutId);
+              resolve(false);
+            });
+        });
+      };
+      
+      const connected = await connectWithTimeout();
       return connected;
     } catch (error) {
       console.error(`Error initializing chain ${chainType}:`, error);

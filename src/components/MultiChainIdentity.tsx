@@ -50,8 +50,14 @@ export function MultiChainIdentity() {
   // Initialize chains on component mount
   useEffect(() => {
     const initChains = async () => {
-      // Initialize with Substrate and Ethereum by default
-      await initialize([ChainType.SUBSTRATE, ChainType.ETHEREUM]);
+      try {
+        // Initialize with Substrate and Ethereum by default
+        await initialize([ChainType.SUBSTRATE, ChainType.ETHEREUM]);
+      } catch (error) {
+        console.error('Failed to initialize chains:', error);
+        // The state will be updated by the initialize function
+        // so we don't need to do anything else here
+      }
     };
 
     if (!isReady && !isInitializing) {
