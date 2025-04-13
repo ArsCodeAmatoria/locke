@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AnimatePresence } from "framer-motion";
+import Header from "@/components/Header";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -28,9 +29,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="antialiased min-h-screen">
-        <AnimatePresence mode="wait">
-          {children}
-        </AnimatePresence>
+        <Header />
+        <div className="pt-16"> {/* Adding padding to account for fixed header */}
+          <AnimatePresence mode="wait">
+            {children}
+          </AnimatePresence>
+        </div>
       </body>
     </html>
   );

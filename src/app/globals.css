@@ -251,4 +251,41 @@ body::after {
 .cyber-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 0 15px rgba(22, 255, 177, 0.7);
+}
+
+/* Secondary Button Style */
+.cyber-button-secondary {
+  position: relative;
+  background: transparent;
+  color: #16ffb1;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 1px solid #16ffb1;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 5px rgba(22, 255, 177, 0.3);
+  overflow: hidden;
+  z-index: 1;
+}
+
+.cyber-button-secondary::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background: rgba(22, 255, 177, 0.1);
+  z-index: -1;
+  transition: width 0.3s ease;
+}
+
+.cyber-button-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px rgba(22, 255, 177, 0.5);
+}
+
+.cyber-button-secondary:hover::after {
+  width: 100%;
 } 

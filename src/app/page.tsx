@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Wallet, Shield, Lock, FileBadge, ArrowRight, Terminal, Code, CircleSlash, Eye, KeyRound, Database } from 'lucide-react';
+import { Wallet, Shield, Lock, FileBadge, ArrowRight, Terminal, Code, CircleSlash, Eye, KeyRound, Database, BookOpen } from 'lucide-react';
 import LayoutWrapper, { Section, Container } from '@/components/layout-wrapper';
 import { Card, CardGrid, SectionDivider } from '@/components/ui/card';
 import { CyberGlitch } from '@/components/ui/motion-component';
@@ -27,11 +27,18 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="mt-10">
-            <Link href="/login" className="block w-full max-w-md mx-auto">
-              <button className="cyber-button w-full flex items-center justify-center py-3">
+          <div className="mt-10 flex flex-col md:flex-row gap-4 justify-center">
+            <Link href="/login" className="block md:w-auto">
+              <button className="cyber-button w-full md:w-64 flex items-center justify-center py-3">
                 Access Secure Terminal
                 <ArrowRight className="ml-2 h-4 w-4" />
+              </button>
+            </Link>
+            
+            <Link href="/docs" className="block md:w-auto">
+              <button className="cyber-button-secondary w-full md:w-64 flex items-center justify-center py-3">
+                Documentation
+                <BookOpen className="ml-2 h-4 w-4" />
               </button>
             </Link>
           </div>
