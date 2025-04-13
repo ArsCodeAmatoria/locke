@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { socialProviders, SocialProvider } from '@/lib/identity-providers';
+import { ZkProver, CredentialType } from '@/lib/wasm-zkp';
 
 type LoginStep = 'connect-wallet' | 'create-identity' | 'verify-identity' | 'complete';
 
@@ -192,27 +193,79 @@ export default function LoginPage() {
     }
   };
 
-  const verifyIdentity = async () => {
+  // Optimize the performance-critical functions with WebAssembly
+  const verifyIdentity = async (identity: any, challenge: string) => {
     setLocalError(null);
     
-    // Initialize terminal steps for verification
-    setTerminalSteps([
-      { text: '> Initializing zero-knowledge proof system...', done: false },
-      { text: '> Generating cryptographic commitment...', done: false },
-      { text: '> Computing zero-knowledge proof...', done: false },
-      { text: '> Verifying proof on-chain...', done: false },
-      { text: '> Proof verified successfully!', done: false }
-    ]);
-    setActiveTerminalStep(0);
-    
     try {
-      // The terminal steps will show the progress visually
-      // We'll move to the next screen after the animations finish
-      setTimeout(() => {
-        setStep('complete');
-      }, 6000);
-    } catch (err) {
-      setLocalError('Failed to verify identity. Please try again.');
+      // Use the WebAssembly ZKP module for DID verification
+      const zkProver = ZkProver.getInstance();
+      await zkProver.init();
+      
+      // Generate a DID ownership proof using the faster Rust implementation
+      const proofResult = await zkProver.generateDIDProof(
+        identity.did,
+        identity.privateKey, // In a real app, this would be securely stored
+        challenge
+      );
+      
+      if (!proofResult.success) {
+        throw new Error(proofResult.message || 'Failed to generate DID proof');
+      }
+      
+      // Verify the proof
+      const isVerified = await zkProver.verifyDIDProof(
+        identity.did,
+        challenge,
+        JSON.stringify(proofResult)
+      );
+      
+      if (!isVerified) {
+        throw new Error('Identity verification failed');
+      }
+      
+      // If this was a production app, we would resolve the DID to get attributes
+      const didDocument = await zkProver.resolveDID(identity.did);
+      
+      // Create a mock credential for demonstration
+      const credential = {
+        id: `credential-${Date.now()}`,
+        issuer: 'did:example:issuer',
+        subject: identity.did,
+        type: CredentialType.Identity,
+        attributes: [
+          {
+            name: 'name',
+            value: 'John Doe',
+            reveal: false
+          },
+          {
+            name: 'email',
+            value: 'john@example.com',
+            reveal: false
+          }
+        ],
+        issuedAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+        revoked: false
+      };
+      
+      // Generate a credential proof using WebAssembly for speed
+      const credentialProof = await zkProver.generateCredentialProof(credential);
+      
+      if (!credentialProof.success) {
+        throw new Error(credentialProof.message || 'Failed to generate credential proof');
+      }
+      
+      // Simulate a delay to show the loading state
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Advance to the next step
+      setStep('complete');
+      setLocalError(null);
+    } catch (error) {
+      console.error('Verification error:', error);
+      setLocalError(error instanceof Error ? error.message : 'Unknown error during verification');
     }
   };
   
@@ -431,7 +484,7 @@ export default function LoginPage() {
                 </TerminalWindow>
               ) : (
                 <Button
-                  onClick={verifyIdentity}
+                  onClick={() => verifyIdentity(auth.account, 'challenge')}
                   disabled={auth.isLoading}
                   className="w-full bg-emerald-500 text-white py-2 px-4 rounded-md hover:bg-emerald-600 transition flex items-center justify-center"
                 >

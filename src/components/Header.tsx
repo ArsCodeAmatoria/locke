@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, X, BookOpen, Terminal, Home, Lock, Layers } from 'lucide-react';
+import { Menu, X, BookOpen, Terminal, Home, Lock, Layers, Cpu } from 'lucide-react';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,6 +14,14 @@ export default function Header() {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const navigation = [
+    { name: 'Home', href: '/', icon: Home },
+    { name: 'Login', href: '/login', icon: Terminal },
+    { name: 'Multi-Chain', href: '/multi-chain', icon: Layers },
+    { name: 'Docs', href: '/docs', icon: BookOpen },
+    { name: 'WASM ZKP Demo', href: '/examples/wasm-zkp', icon: Cpu },
+  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-emerald-400/20">
@@ -26,42 +34,21 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-6 items-center">
-            <Link 
-              href="/" 
-              className={`text-sm font-medium transition-colors duration-200 flex items-center ${
-                isActive('/') ? 'text-emerald-400' : 'text-slate-300 hover:text-emerald-400'
-              }`}
-            >
-              <Home className="h-4 w-4 mr-1" />
-              Home
-            </Link>
-            <Link 
-              href="/login" 
-              className={`text-sm font-medium transition-colors duration-200 flex items-center ${
-                isActive('/login') ? 'text-emerald-400' : 'text-slate-300 hover:text-emerald-400'
-              }`}
-            >
-              <Terminal className="h-4 w-4 mr-1" />
-              Login
-            </Link>
-            <Link 
-              href="/multi-chain" 
-              className={`text-sm font-medium transition-colors duration-200 flex items-center ${
-                isActive('/multi-chain') ? 'text-emerald-400' : 'text-slate-300 hover:text-emerald-400'
-              }`}
-            >
-              <Layers className="h-4 w-4 mr-1" />
-              Multi-Chain
-            </Link>
-            <Link 
-              href="/docs" 
-              className={`text-sm font-medium transition-colors duration-200 flex items-center ${
-                isActive('/docs') ? 'text-emerald-400' : 'text-slate-300 hover:text-emerald-400'
-              }`}
-            >
-              <BookOpen className="h-4 w-4 mr-1" />
-              Documentation
-            </Link>
+            {navigation.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link 
+                  key={item.href}
+                  href={item.href} 
+                  className={`text-sm font-medium transition-colors duration-200 flex items-center ${
+                    isActive(item.href) ? 'text-emerald-400' : 'text-slate-300 hover:text-emerald-400'
+                  }`}
+                >
+                  <Icon className="h-4 w-4 mr-1" />
+                  {item.name}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -79,54 +66,24 @@ export default function Header() {
       {isMenuOpen && (
         <div className="md:hidden bg-black/90 border-b border-emerald-400/20 py-4 px-4">
           <nav className="flex flex-col space-y-4">
-            <Link 
-              href="/" 
-              className={`text-sm font-medium p-2 rounded transition-colors duration-200 flex items-center ${
-                isActive('/') 
-                  ? 'bg-emerald-400/10 text-emerald-400' 
-                  : 'text-slate-300 hover:bg-emerald-400/10 hover:text-emerald-400'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <Home className="h-4 w-4 mr-2" />
-              Home
-            </Link>
-            <Link 
-              href="/login" 
-              className={`text-sm font-medium p-2 rounded transition-colors duration-200 flex items-center ${
-                isActive('/login') 
-                  ? 'bg-emerald-400/10 text-emerald-400' 
-                  : 'text-slate-300 hover:bg-emerald-400/10 hover:text-emerald-400'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <Terminal className="h-4 w-4 mr-2" />
-              Login
-            </Link>
-            <Link 
-              href="/multi-chain" 
-              className={`text-sm font-medium p-2 rounded transition-colors duration-200 flex items-center ${
-                isActive('/multi-chain') 
-                  ? 'bg-emerald-400/10 text-emerald-400' 
-                  : 'text-slate-300 hover:bg-emerald-400/10 hover:text-emerald-400'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <Layers className="h-4 w-4 mr-2" />
-              Multi-Chain
-            </Link>
-            <Link 
-              href="/docs" 
-              className={`text-sm font-medium p-2 rounded transition-colors duration-200 flex items-center ${
-                isActive('/docs') 
-                  ? 'bg-emerald-400/10 text-emerald-400' 
-                  : 'text-slate-300 hover:bg-emerald-400/10 hover:text-emerald-400'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <BookOpen className="h-4 w-4 mr-2" />
-              Documentation
-            </Link>
+            {navigation.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link 
+                  key={item.href}
+                  href={item.href} 
+                  className={`text-sm font-medium p-2 rounded transition-colors duration-200 flex items-center ${
+                    isActive(item.href) 
+                      ? 'bg-emerald-400/10 text-emerald-400' 
+                      : 'text-slate-300 hover:bg-emerald-400/10 hover:text-emerald-400'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Icon className="h-4 w-4 mr-2" />
+                  {item.name}
+                </Link>
+              );
+            })}
           </nav>
         </div>
       )}

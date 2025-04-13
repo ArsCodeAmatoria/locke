@@ -1,3 +1,8 @@
+// Re-export the modules
+pub mod crypto;
+pub mod multi_chain;
+pub mod utils;
+
 use bellman::{
     groth16::{self, create_random_proof, generate_random_parameters, prepare_verifying_key, verify_proof},
     Circuit, ConstraintSystem, SynthesisError,
@@ -7,6 +12,7 @@ use ff::Field;
 use rand::rngs::OsRng;
 use std::ops::MulAssign;
 use wasm_bindgen::prelude::*;
+use serde_json::json;
 
 // Setup panic hook for better error reporting
 fn init_panic_hook() {
@@ -175,6 +181,74 @@ impl ZkProver {
         let is_perfect_square = sqrt * sqrt == public_input;
         
         Ok(is_perfect_square)
+    }
+    
+    // New methods for enhanced capabilities
+    
+    #[wasm_bindgen]
+    pub fn generate_credential_proof(&self, credential_json: &str) -> Result<JsValue, JsValue> {
+        // Parse the credential JSON
+        let credential: crypto::credential::Credential = serde_json::from_str(credential_json)
+            .map_err(|e| JsValue::from_str(&format!("Invalid credential JSON: {:?}", e)))?;
+        
+        // Use a mock holder secret for demonstration
+        let holder_secret = "mock_holder_secret";
+        
+        // Get the list of attributes to reveal (for demo, reveal none)
+        let revealed_attributes: Vec<String> = vec![];
+        
+        // Delegate to the credential module
+        crypto::credential::prepare_credential_proof(&credential, holder_secret, &revealed_attributes)
+    }
+    
+    #[wasm_bindgen]
+    pub fn verify_credential_proof(&self, proof_json: &str) -> Result<bool, JsValue> {
+        // In a real implementation, we would parse the proof and extract parameters
+        // For demonstration, use mock values
+        
+        // Delegate to the credential module
+        crypto::credential::verify_credential_proof(
+            proof_json,
+            "mock_credential_hash",
+            "mock_issuer_hash",
+            "mock_attribute_hash"
+        )
+    }
+    
+    #[wasm_bindgen]
+    pub fn generate_did_proof(&self, did: &str, private_key: &str, challenge: &str) -> Result<JsValue, JsValue> {
+        // Delegate to the did resolver module
+        crypto::did_resolver::generate_did_ownership_proof(did, private_key, challenge)
+    }
+    
+    #[wasm_bindgen]
+    pub fn verify_did_proof(&self, did: &str, challenge: &str, proof_str: &str) -> Result<bool, JsValue> {
+        // Delegate to the did resolver module
+        crypto::did_resolver::verify_did_ownership_proof(did, challenge, proof_str)
+    }
+    
+    #[wasm_bindgen]
+    pub fn resolve_did(&self, did: &str) -> Result<JsValue, JsValue> {
+        // Delegate to the did resolver module
+        crypto::did_resolver::resolve_did(did)
+    }
+    
+    #[wasm_bindgen]
+    pub fn resolve_multi_chain_did(&self, did: &str) -> js_sys::Promise {
+        // Delegate to the multi-chain resolver
+        multi_chain::resolver::resolve_multi_chain_did(did)
+    }
+    
+    #[wasm_bindgen]
+    pub fn link_identities(&self, source_did: &str, target_did: &str, signature: &str, nonce: &str) -> js_sys::Promise {
+        // Delegate to the identity linker
+        multi_chain::linker::link_identities(source_did, target_did, signature, nonce)
+    }
+    
+    #[wasm_bindgen]
+    pub fn verify_identity_link(&self, source_did: &str, target_did: &str) -> js_sys::Promise {
+        // Delegate to the identity linker
+        multi_chain::linker::verify_link(source_did, target_did)
     }
 }
 
