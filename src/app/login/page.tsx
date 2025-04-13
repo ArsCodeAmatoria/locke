@@ -12,7 +12,7 @@ type LoginStep = 'connect-wallet' | 'create-identity' | 'verify-identity' | 'com
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, createIdentity, isLoading, error } = useAuth();
+  const auth = useAuth();
   const [step, setStep] = useState<LoginStep>('connect-wallet');
   const [localError, setLocalError] = useState<string | null>(null);
   const [account, setAccount] = useState<{address: string} | null>(null);
@@ -28,8 +28,8 @@ export default function LoginPage() {
       
       setAccount(mockAccount);
       
-      // The login function in useAuth hook already accepts an account parameter
-      const success = await login(mockAccount);
+      // Use auth directly to avoid type issues
+      const success = await auth.login(mockAccount);
       
       if (success) {
         setStep('create-identity');
@@ -50,8 +50,8 @@ export default function LoginPage() {
     }
     
     try {
-      // The createIdentity function in useAuth hook already accepts an account parameter
-      const didId = await createIdentity(account);
+      // Use auth directly to avoid type issues
+      const didId = await auth.createIdentity(account);
       
       if (didId) {
         setStep('verify-identity');
@@ -82,7 +82,7 @@ export default function LoginPage() {
   };
 
   // Display either local error or error from auth context
-  const displayError = localError || (error ? error.toString() : null);
+  const displayError = localError || (auth.error ? auth.error.toString() : null);
 
   return (
     <div className="min-h-screen bg-background py-16 px-4">
@@ -111,10 +111,10 @@ export default function LoginPage() {
               
               <button
                 onClick={handleConnectWallet}
-                disabled={isLoading}
+                disabled={auth.isLoading}
                 className="w-full bg-emerald-500 text-white py-2 px-4 rounded-md hover:bg-emerald-600 transition flex items-center justify-center"
               >
-                {isLoading ? (
+                {auth.isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     Connecting...
@@ -154,10 +154,10 @@ export default function LoginPage() {
               
               <button
                 onClick={handleCreateIdentity}
-                disabled={isLoading}
+                disabled={auth.isLoading}
                 className="w-full bg-emerald-500 text-white py-2 px-4 rounded-md hover:bg-emerald-600 transition flex items-center justify-center"
               >
-                {isLoading ? (
+                {auth.isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     Creating Identity...
@@ -176,7 +176,7 @@ export default function LoginPage() {
               
               <button
                 onClick={reset}
-                disabled={isLoading}
+                disabled={auth.isLoading}
                 className="text-sm text-slate-500 hover:text-emerald-500 transition-colors flex items-center"
               >
                 Back
@@ -202,10 +202,10 @@ export default function LoginPage() {
               
               <button
                 onClick={verifyIdentity}
-                disabled={isLoading}
+                disabled={auth.isLoading}
                 className="w-full bg-emerald-500 text-white py-2 px-4 rounded-md hover:bg-emerald-600 transition flex items-center justify-center"
               >
-                {isLoading ? (
+                {auth.isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     Generating Proof...
@@ -224,7 +224,7 @@ export default function LoginPage() {
               
               <button
                 onClick={reset}
-                disabled={isLoading}
+                disabled={auth.isLoading}
                 className="text-sm text-slate-500 hover:text-emerald-500 transition-colors flex items-center"
               >
                 Back
