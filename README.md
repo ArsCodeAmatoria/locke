@@ -9,6 +9,7 @@ A decentralized identity verification system built on Polkadot and Substrate wit
 - **Decentralized Identity (DID)**: Store your identity on the Substrate blockchain
 - **Soul-Bound Tokens (SBTs)**: Non-transferable credentials issued to your identity
 - **Zero-Knowledge Proofs**: Verify credential ownership without revealing sensitive data
+- **Advanced Credential Types**: Support for KYC, age, income, education, citizenship, health, and membership credentials
 - **WASM-powered**: ZK proofs generated in the browser with WebAssembly
 - **Cyberpunk-inspired UI**: Modern interface with neon aesthetics
 - **Responsive Design**: Optimized for desktop and mobile devices
@@ -71,6 +72,8 @@ For full functionality, you can run a local Substrate node with our custom palle
   - `src/lib/`: Utility libraries and hooks
     - `src/lib/hooks/use-auth.tsx`: Authentication hook for managing login state
     - `src/lib/substrate-client.ts`: Client for interacting with Substrate node
+    - `src/lib/credential-types.ts`: Advanced credential type definitions and schemas
+    - `src/lib/advanced-zkp.ts`: Advanced zero-knowledge proof system
     - `src/lib/wasm-zkp/`: WASM module for ZK proof generation/verification
     - `src/lib/walletconnect-utils.ts`: Utilities for mobile wallet connections
 
@@ -108,6 +111,38 @@ The zkID Login system now supports mobile wallets for authentication:
 - Responsive design that adapts to different screen sizes
 - Session management for persistent connections
 
+## Advanced Credential Types
+
+The system now supports a comprehensive range of verifiable credential types:
+
+### Supported Credential Types
+
+- **KYC Verification**: Know Your Customer credentials with verification levels
+- **Age Credential**: Age verification without revealing the actual age
+- **Citizenship Verification**: Prove citizenship of a country
+- **Education Credential**: Verify educational achievements and degrees
+- **Professional License**: Validate professional qualifications
+- **Income Verification**: Prove income meets certain thresholds
+- **Health Credential**: Verify health status without revealing medical details
+- **Membership Credential**: Prove membership in organizations
+
+### Credential Schema System
+
+Each credential type has a defined schema with:
+
+- **Required Fields**: Mandatory data fields for the credential type
+- **Optional Fields**: Additional information that may be included
+- **Validation Rules**: Rules for validating field values
+- **ZK-Provable Fields**: Fields that can be proven with zero-knowledge
+
+### Verification Rules
+
+- Validation of field requirements and formats
+- Verification of credential issuer authority
+- Expiration checks for time-sensitive credentials
+- Range validation (e.g., GPA between 0 and 4.0)
+- Trust level assessment based on issuer reputation
+
 ## Substrate Integration Details
 
 ### DID Pallet
@@ -137,19 +172,34 @@ The Substrate runtime combines the DID and SBT pallets to create a complete iden
 - Credential verification using the integrated pallets
 - Zero-knowledge proof verification for privacy-preserving authentication
 
-## Zero-Knowledge Proof System
+## Advanced Zero-Knowledge Proof System
 
-Our ZK proof system allows users to:
+Our enhanced ZK proof system now provides:
 
-1. Generate proofs in the browser using WebAssembly
-2. Prove attributes about their credentials without revealing the actual data
-3. Verify proofs on-chain through the Substrate node
+### Features
 
-Example use cases:
+- **Type-specific proof generation**: Specialized proof generators for each credential type
+- **Predicate-based verification**: Support for complex comparison operations (>, >=, =, etc.)
+- **Selective disclosure**: Reveal only specific attributes while keeping others private
+- **Compound proofs**: Combine multiple credentials in a single verification
+- **WASM optimization**: Browser-based ZK proof generation with WebAssembly
 
-- Age verification (prove you're over 18 without revealing your actual age)
-- Income verification (prove you earn above a threshold without revealing exact income)
-- Citizenship verification (prove country of citizenship without revealing personal details)
+### Verification Flow
+
+1. User selects a credential to prove
+2. System identifies the required attributes and predicates
+3. Zero-knowledge circuit is constructed based on the credential type
+4. Proof is generated in the browser using WebAssembly
+5. The proof and public inputs are transmitted for verification
+6. Verification without revealing the underlying credential data
+
+### Example Use Cases
+
+- **Age verification**: Prove you are over 18 without revealing your birth date
+- **Income qualification**: Prove your income exceeds a threshold without revealing the exact amount
+- **Educational credentials**: Verify degree completion without exposing grades
+- **Health status**: Confirm vaccination status without revealing medical history
+- **KYC compliance**: Verify identity verification level without exposing personal details
 
 ## Login Flow
 
@@ -166,7 +216,7 @@ Example use cases:
 - **Phase 2**: ZK proof generator (WASM) + verify flow - ✅ Completed
 - **Phase 3**: Substrate backend integration - ✅ Completed
 - **Phase 4**: Mobile wallet support - ✅ Completed
-- **Phase 5**: Advanced credential types and verification - 🔜 Planned
+- **Phase 5**: Advanced credential types and verification - ✅ Completed
 - **Phase 6**: Integration with real-world identity providers - 🔜 Planned
 
 ## Contributing
