@@ -12,6 +12,17 @@ const nextConfig = {
     "@polkadot/api",
     "@polkadot/extension-dapp"
   ],
+  // Configure webpack to ignore optional WebSocket dependencies
+  webpack: (config, { isServer }) => {
+    // Ignore optional dependencies of ws package
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      bufferutil: false,
+      'utf-8-validate': false,
+    };
+    
+    return config;
+  },
 };
 
 module.exports = nextConfig; 
