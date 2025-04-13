@@ -59,7 +59,7 @@ export default function Home() {
         <Container className="relative z-10 max-w-4xl">
           <div className="text-center mb-10">
             <h1 className="text-6xl font-bold mb-6 cyber-glow terminal-text">
-              <CyberGlitch data-text="zkID Login">zkID Login</CyberGlitch>
+              <CyberGlitch data-text="zkLocke">zkLocke</CyberGlitch>
             </h1>
             <div className="text-xl text-emerald-400 max-w-2xl mx-auto font-mono mb-8">
               <GlitchReveal>Decentralized identity verification powered by zero-knowledge cryptography</GlitchReveal>
