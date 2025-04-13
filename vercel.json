@@ -1,0 +1,11 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "environment": {
+    "NEXT_PUBLIC_USE_REAL_NODE": "false",
+    "NEXT_PUBLIC_SUBSTRATE_NODE_URL": "wss://rpc.polkadot.io"
+  }
+} 
