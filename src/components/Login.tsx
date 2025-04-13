@@ -21,7 +21,7 @@ export function Login() {
     
     try {
       // Enable the extension
-      const extensions = await web3Enable('Locke Identity App');
+      const extensions = await web3Enable('zkLocke Identity App');
       
       if (extensions.length === 0) {
         setExtError('No Polkadot extension found. Please install the extension and refresh the page.');
@@ -54,7 +54,7 @@ export function Login() {
     if (success) {
       toast({
         title: 'Logged in successfully',
-        description: 'Welcome back to Locke Identity',
+        description: 'Welcome back to zkLocke Identity',
       });
     } else {
       toast({

@@ -29,7 +29,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center">
             <Lock className="h-5 w-5 text-emerald-400 mr-2" />
-            <span className="text-lg font-bold text-emerald-400 cyber-glow terminal-text">zkID</span>
+            <span className="text-lg font-bold text-emerald-400 cyber-glow terminal-text">zkLocke</span>
           </Link>
 
           {/* Desktop Navigation */}

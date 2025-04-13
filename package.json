@@ -5,7 +5,7 @@
   "author": "Ars Code Amatoria (https://www.arscode.org)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ArsCodeAmatoria/locke"
+    "url": "https://github.com/ArsCodeAmatoria/zkLocke"
   },
   "scripts": {
     "dev": "next dev",

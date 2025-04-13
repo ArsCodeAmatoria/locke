@@ -60,8 +60,8 @@ A decentralized identity verification system built on Polkadot and Substrate wit
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/ArsCodeAmatoria/locke.git
-cd locke
+git clone https://github.com/ArsCodeAmatoria/zkLocke.git
+cd zkLocke
 ```
 
 2. Install dependencies:
