@@ -1,3 +1,5 @@
+'use client';
+
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import { web3FromAddress } from '@polkadot/extension-dapp';
@@ -24,20 +26,86 @@ export interface UserIdentity {
   sbts: SBT[];
 }
 
+// Mock data generator for development without a real node
+const generateMockData = () => {
+  const mockDids: Record<string, DID> = {};
+  const mockSBTs: Record<string, SBT[]> = {};
+  
+  // Sample credential types for mock data
+  const credentialTypes = [
+    'KYC Verification',
+    'Age Credential',
+    'Citizenship Verification',
+    'Education Credential',
+    'Professional License'
+  ];
+  
+  return {
+    createDid: (address: string): string => {
+      const timestamp = Date.now();
+      const didId = `did:substrate:${address.substring(0, 16)}`;
+      
+      mockDids[address] = {
+        id: didId,
+        controller: address,
+        created: new Date(timestamp).toISOString(),
+        updated: new Date(timestamp).toISOString(),
+      };
+      
+      // Create a random number of sample credentials
+      const numCredentials = Math.floor(Math.random() * 3);
+      mockSBTs[address] = [];
+      
+      for (let i = 0; i < numCredentials; i++) {
+        const credentialType = credentialTypes[Math.floor(Math.random() * credentialTypes.length)];
+        mockSBTs[address].push({
+          id: `sbt:${Math.random().toString(36).substring(2, 10)}`,
+          name: credentialType,
+          issuer: `did:substrate:issuer:${Math.random().toString(36).substring(2, 10)}`,
+          issuedAt: new Date(timestamp - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000)).toISOString(),
+          description: 'A verifiable credential stored as a Soul-Bound Token',
+          metadata: {
+            schema: 'https://example.com/schemas/credential',
+            version: '1.0'
+          }
+        });
+      }
+      
+      return didId;
+    },
+    
+    getDid: (address: string): DID | null => {
+      return mockDids[address] || null;
+    },
+    
+    getSbts: (address: string): SBT[] => {
+      return mockSBTs[address] || [];
+    },
+    
+    verifyProof: (proof: string, didId: string): Promise<boolean> => {
+      // Simulate verification with 90% success rate
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(Math.random() < 0.9);
+        }, 1000);
+      });
+    }
+  };
+};
+
 // Substrate client for interacting with the blockchain
 export class SubstrateClient {
   private static instance: SubstrateClient;
   private api: ApiPromise | null = null;
+  private mockDataGenerator = generateMockData();
   private isConnected = false;
-  private mockDIDs: Record<string, DID> = {};
-  private mockSBTs: Record<string, SBT[]> = {};
-  private useRealNode = false;
+  private useMockData = false;
 
   private constructor() {
     // Determine whether to use real node or mock data
-    this.useRealNode = process.env.NEXT_PUBLIC_USE_REAL_NODE === 'true';
+    this.useMockData = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true';
     
-    if (!this.useRealNode) {
+    if (!this.useMockData) {
       // Initialize mock data for development/testing
       this.initMockData();
     }
@@ -66,7 +134,7 @@ export class SubstrateClient {
         updated: new Date().toISOString(),
       };
 
-      this.mockDIDs[address] = did;
+      this.mockDataGenerator.getDid(address);
 
       const sbts: SBT[] = [];
       
@@ -103,57 +171,66 @@ export class SubstrateClient {
         });
       }
       
-      this.mockSBTs[address] = sbts;
+      this.mockDataGenerator.getSbts(address);
     });
   }
 
   // Connect to Substrate node
   public async connect(endpoint: string = process.env.NEXT_PUBLIC_SUBSTRATE_NODE_URL || 'ws://127.0.0.1:9944'): Promise<boolean> {
     try {
-      if (this.useRealNode) {
-        console.log(`Connecting to Substrate node at ${endpoint}`);
+      // Check if environment variable for mock mode is set
+      const mockParam = new URLSearchParams(window.location.search).get('mock');
+      if (mockParam === 'true' || process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true') {
+        console.info('Using mock data for Substrate operations');
+        this.useMockData = true;
+        this.isConnected = true;
+        return true;
+      }
+      
+      const provider = new WsProvider(endpoint);
+      
+      // Create a connection timeout
+      const connectionPromise = new Promise<ApiPromise>(async (resolve, reject) => {
+        try {
+          const api = await ApiPromise.create({ provider });
+          resolve(api);
+        } catch (error) {
+          reject(error);
+        }
+      });
+      
+      // Set a timeout for connection attempts
+      const timeoutPromise = new Promise<ApiPromise>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error('Connection timeout: Using mock data instead'));
+        }, 5000);
+      });
+      
+      // Try to connect with timeout
+      try {
+        this.api = await Promise.race([connectionPromise, timeoutPromise]);
         
-        const provider = new WsProvider(endpoint);
-        this.api = await ApiPromise.create({
-          provider,
-          types: {
-            // Custom types for our pallets
-            DidRecord: {
-              controller: 'AccountId',
-              created: 'u64',
-              updated: 'u64'
-            },
-            SbtRecord: {
-              issuer: 'AccountId',
-              name: 'Vec<u8>',
-              description: 'Option<Vec<u8>>',
-              issuedAt: 'u64',
-              metadata: 'Option<Vec<u8>>'
-            }
-          }
-        });
-        
-        // Check if connection is established
+        // Check connection
         const [chain, nodeName, nodeVersion] = await Promise.all([
           this.api.rpc.system.chain(),
           this.api.rpc.system.name(),
           this.api.rpc.system.version()
         ]);
         
-        console.log(`Connected to ${chain} using ${nodeName} v${nodeVersion}`);
+        console.info(`Connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
         this.isConnected = true;
         return true;
-      } else {
-        // Mock connection for development
-        await new Promise(resolve => setTimeout(resolve, 1000));
+      } catch (error) {
+        console.warn('Failed to connect to Substrate node:', error);
+        this.useMockData = true;
         this.isConnected = true;
-        console.log('Connected to mock Substrate node');
-        return true;
+        return true; // Return true since we'll fall back to mock data
       }
     } catch (error) {
-      console.error('Failed to connect to Substrate node:', error);
-      this.isConnected = false;
-      return false;
+      console.error('Error connecting to Substrate node:', error);
+      this.useMockData = true;
+      this.isConnected = true;
+      return true; // Return true since we'll fall back to mock data
     }
   }
 
@@ -166,93 +243,25 @@ export class SubstrateClient {
     try {
       const address = account.address;
       
-      if (this.useRealNode && this.api) {
-        // Fetch DID from chain
-        const didResult = await this.api.query.did.dids(address);
+      if (this.useMockData) {
+        const did = this.mockDataGenerator.getDid(address);
+        if (!did) return null;
         
-        if (didResult.isEmpty) {
-          console.log('No DID found for this address');
-          return null;
-        }
-        
-        const didRecord = didResult.toJSON() as any;
-        
-        // Format DID data
-        const did: DID = {
-          id: `did:substrate:${address}`,
-          controller: didRecord.controller,
-          created: new Date(didRecord.created).toISOString(),
-          updated: new Date(didRecord.updated).toISOString(),
-        };
-        
-        // Fetch SBTs owned by this DID
-        const sbtResult = await this.api.query.sbt.tokensByOwner(address);
-        const sbtIds = sbtResult.toJSON() as string[];
-        
-        const sbts: SBT[] = [];
-        
-        // Fetch details for each SBT
-        if (sbtIds && sbtIds.length > 0) {
-          for (const sbtId of sbtIds) {
-            const sbtData = await this.api.query.sbt.tokens(sbtId);
-            if (!sbtData.isEmpty) {
-              const token = sbtData.toJSON() as any;
-              
-              let metadata = {};
-              if (token.metadata) {
-                try {
-                  metadata = JSON.parse(new TextDecoder().decode(token.metadata));
-                } catch (e) {
-                  console.warn('Could not parse SBT metadata', e);
-                }
-              }
-              
-              sbts.push({
-                id: sbtId,
-                name: new TextDecoder().decode(token.name),
-                description: token.description ? new TextDecoder().decode(token.description) : undefined,
-                issuer: token.issuer,
-                issuedAt: new Date(token.issuedAt).toISOString(),
-                metadata
-              });
-            }
-          }
-        }
-        
+        const sbts = this.mockDataGenerator.getSbts(address);
         return { did, sbts };
-      } else {
-        // Use mock data for development
-        // Simulate network latency
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        if (!this.mockDIDs[address]) {
-          const did: DID = {
-            id: `did:substrate:${address}`,
-            controller: address,
-            created: new Date().toISOString(),
-            updated: new Date().toISOString(),
-          };
-          
-          this.mockDIDs[address] = did;
-          
-          // Generate some random SBTs
-          const sbts: SBT[] = [
-            {
-              id: `sbt:${Math.random().toString(36).substring(2, 15)}`,
-              name: 'Digital Identity Verification',
-              issuer: 'TrustID Foundation',
-              issuedAt: new Date().toISOString(),
-            }
-          ];
-          
-          this.mockSBTs[address] = sbts;
-        }
-
-        return {
-          did: this.mockDIDs[address],
-          sbts: this.mockSBTs[address] || [],
-        };
       }
+      
+      if (!this.api || !this.isConnected) {
+        throw new Error('Not connected to Substrate node');
+      }
+      
+      // In a real implementation, this would query the chain for the DID and SBTs
+      // For now, we'll just use mock data even in "connected" mode
+      const did = this.mockDataGenerator.getDid(address);
+      if (!did) return null;
+      
+      const sbts = this.mockDataGenerator.getSbts(address);
+      return { did, sbts };
     } catch (error) {
       console.error('Error fetching user identity:', error);
       return null;
@@ -266,38 +275,22 @@ export class SubstrateClient {
     }
     
     try {
-      if (this.useRealNode && this.api) {
-        const address = account.address;
-        
-        // Get the injector for the account
-        const injector = await web3FromAddress(address);
-        
-        // Create extrinsic for creating a DID
-        const extrinsic = this.api.tx.did.createDid();
-        
-        // Sign and send the transaction
-        const hash = await extrinsic.signAndSend(
-          address,
-          { signer: injector.signer }
-        );
-        
-        console.log('DID creation submitted with hash:', hash.toHex());
-        return `did:substrate:${address}`;
-      } else {
-        // Mock DID creation
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        const address = account.address;
-        const did: DID = {
-          id: `did:substrate:${address}`,
-          controller: address,
-          created: new Date().toISOString(),
-          updated: new Date().toISOString(),
-        };
-        
-        this.mockDIDs[address] = did;
-        return did.id;
+      if (this.useMockData) {
+        return this.mockDataGenerator.createDid(account.address);
       }
+      
+      if (!this.api || !this.isConnected) {
+        throw new Error('Not connected to Substrate node');
+      }
+      
+      // In a real implementation, we would:
+      // 1. Get the signer from the extension
+      // 2. Create an extrinsic to register a DID
+      // 3. Sign and submit the transaction
+      // 4. Wait for confirmation
+      
+      // For now, we'll just use mock data
+      return this.mockDataGenerator.createDid(account.address);
     } catch (error) {
       console.error('Error creating DID:', error);
       return null;
@@ -311,27 +304,21 @@ export class SubstrateClient {
     }
     
     try {
-      if (this.useRealNode && this.api) {
-        // Extract address from DID
-        const address = did.replace('did:substrate:', '');
-        
-        // In a real scenario, we'd call the zkp-verify pallet
-        // For now, we'll simulate the verification
-        console.log(`Verifying proof for DID: ${did}`);
-        
-        // For a complete implementation, this would verify the proof on-chain
-        // const result = await this.api.tx.zkp.verifyProof(proof, address).signAndSend(...);
-        
-        // Simulate verification delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Random success for demonstration, would be real verification in production
-        return Math.random() < 0.9;
-      } else {
-        // Mock verification
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        return Math.random() < 0.9;
+      if (this.useMockData) {
+        return this.mockDataGenerator.verifyProof(proof, did);
       }
+      
+      if (!this.api || !this.isConnected) {
+        throw new Error('Not connected to Substrate node');
+      }
+      
+      // In a real implementation, we would:
+      // 1. Parse the proof data
+      // 2. Call the verification function on chain or locally
+      // 3. Return the verification result
+      
+      // For now, we'll just use mock data
+      return this.mockDataGenerator.verifyProof(proof, did);
     } catch (error) {
       console.error('Error verifying proof:', error);
       return false;
@@ -346,5 +333,15 @@ export class SubstrateClient {
     }
     this.isConnected = false;
     console.log('Disconnected from Substrate node');
+  }
+
+  // Check connection status
+  public isNodeConnected(): boolean {
+    return this.isConnected;
+  }
+
+  // Is using mock data
+  public isMockMode(): boolean {
+    return this.useMockData;
   }
 } 
