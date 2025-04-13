@@ -63,6 +63,14 @@ export interface WasmZkModule {
   initialize: () => Promise<void>;
   generateProof: (value: number) => Promise<ProofResult>;
   verifyProof: (proof: string, publicInput: number) => Promise<boolean>;
+  generate_credential_proof: (credentialJson: string) => Promise<string>;
+  verify_credential_proof: (proofJson: string) => Promise<boolean>;
+  generate_did_proof: (did: string, privateKey: string, challenge: string) => Promise<string>;
+  verify_did_proof: (did: string, challenge: string, proofStr: string) => Promise<boolean>;
+  resolve_did: (did: string) => Promise<any>;
+  resolve_multi_chain_did: (did: string) => Promise<any>;
+  link_identities: (sourceDid: string, targetDid: string, signature: string, nonce: string) => Promise<any>;
+  verify_identity_link: (sourceDid: string, targetDid: string) => Promise<any>;
 }
 
 // Proof result interface
@@ -77,11 +85,7 @@ export interface ProofResult {
 }
 
 // WebAssembly ZK Prover implementation
-export type WasmZkProver = {
-  initialize: () => Promise<void>;
-  generateProof: (value: number) => Promise<ProofResult>;
-  verifyProof: (proof: string, publicInput: number) => Promise<boolean>;
-};
+export type WasmZkProver = WasmZkModule;
 
 // Mock implementation for development
 const mockProver: WasmZkProver = {
@@ -103,6 +107,98 @@ const mockProver: WasmZkProver = {
   verifyProof: async (proof: string, publicInput: number) => {
     console.log(`Verifying mock proof: ${proof} with input: ${publicInput}`);
     return Promise.resolve(true);
+  },
+  
+  generate_credential_proof: async (credentialJson: string) => {
+    console.log(`Generating mock credential proof for: ${credentialJson}`);
+    return Promise.resolve(JSON.stringify({
+      success: true,
+      message: "Mock credential proof generated successfully",
+      credentialHash: "hash_123",
+      issuerHash: "hash_456",
+      attributeHash: "hash_789"
+    }));
+  },
+  
+  verify_credential_proof: async (proofJson: string) => {
+    console.log(`Verifying mock credential proof: ${proofJson}`);
+    return Promise.resolve(true);
+  },
+  
+  generate_did_proof: async (did: string, privateKey: string, challenge: string) => {
+    console.log(`Generating mock DID proof for: ${did}`);
+    return Promise.resolve(JSON.stringify({
+      success: true,
+      message: "Mock DID ownership proof generated successfully",
+      did: did,
+      challenge: challenge,
+      response: "mock_response_hash"
+    }));
+  },
+  
+  verify_did_proof: async (did: string, challenge: string, proofStr: string) => {
+    console.log(`Verifying mock DID proof for: ${did}`);
+    return Promise.resolve(true);
+  },
+  
+  resolve_did: async (did: string) => {
+    console.log(`Resolving mock DID: ${did}`);
+    return Promise.resolve({
+      id: did,
+      controller: did,
+      verificationMethods: [{
+        id: `${did}#keys-1`,
+        type: "Ed25519VerificationKey2020",
+        controller: did,
+        publicKeyMultibase: "zH3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
+      }],
+      authentication: [`${did}#keys-1`],
+      assertionMethod: [`${did}#keys-1`],
+      service: [{
+        id: `${did}#linked-domain`,
+        type: "LinkedDomains",
+        serviceEndpoint: "https://example.com"
+      }]
+    });
+  },
+  
+  resolve_multi_chain_did: async (did: string) => {
+    console.log(`Resolving mock multi-chain DID: ${did}`);
+    return Promise.resolve({
+      id: did,
+      controller: did,
+      linkedDids: new Map([
+        ["substrate:1", "did:multi:substrate:1:5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"],
+        ["ethereum:1", "did:multi:ethereum:1:0x123456789abcdef"]
+      ]),
+      linkedAccounts: new Map([
+        ["substrate:1", ["5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"]],
+        ["ethereum:1", ["0x123456789abcdef"]]
+      ]),
+      verificationMethods: [],
+      services: []
+    });
+  },
+  
+  link_identities: async (sourceDid: string, targetDid: string, signature: string, nonce: string) => {
+    console.log(`Linking mock identities: ${sourceDid} to ${targetDid}`);
+    return Promise.resolve({
+      success: true,
+      message: "DIDs linked successfully",
+      sourceDid: sourceDid,
+      targetDid: targetDid,
+      transactionHash: "0x1234567890abcdef"
+    });
+  },
+  
+  verify_identity_link: async (sourceDid: string, targetDid: string) => {
+    console.log(`Verifying mock identity link: ${sourceDid} to ${targetDid}`);
+    return Promise.resolve({
+      verified: true,
+      sourceDid: sourceDid,
+      targetDid: targetDid,
+      verifiedAt: new Date().toISOString()
+    });
   }
 };
 
