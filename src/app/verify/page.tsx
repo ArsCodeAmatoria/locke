@@ -1,6 +1,5 @@
 'use client';
 
-import { Metadata } from 'next';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -16,12 +15,6 @@ interface VerificationResult {
   verified: boolean;
   message: string;
 }
-
-// Metadata for the page
-export const metadata = {
-  title: 'Verify Identity | zkID Login',
-  description: 'Verify your identity with trusted real-world providers to obtain verifiable credentials',
-};
 
 export default function VerifyPage() {
   const [proofInput, setProofInput] = useState('');
